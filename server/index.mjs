@@ -7,7 +7,7 @@ import axios from "axios"
 import { dbConnect } from "./config/db.mjs";
 import router from "./routes/routes.mjs";
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 8080;
 
 
 
@@ -69,7 +69,7 @@ app.post("/api/contact", async (req, res) => {
 
         let mailOptions = {
             from: process.env.EMAIL,
-            to: "info@ridame.ae",
+            to: "",
             subject: `🚨 URGENT: Please Call ${name} ASAP 🚨`,
             html: html,
         };

@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.mjs"
+    "start": "nodemon index.mjs",
+    "server": "nodemon index.mjs",
+    "client": "npm run dev --prefix ../client",
+    "admin": "npm run dev --prefix ../admin",
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run admin\""
   },
   "keywords": [],
   "author": "",

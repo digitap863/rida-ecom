@@ -1,11 +1,9 @@
 import "dotenv/config"
 import jwt from "jsonwebtoken"
-
-
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { cataloguesModel } from "../model/catalogues.mjs";
+
 
 // Convert import.meta.url to a filename
 const __filename = fileURLToPath(import.meta.url);
