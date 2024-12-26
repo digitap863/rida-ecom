@@ -1,30 +1,17 @@
 "use client";
 import { IoIosLogOut, IoMdPie } from 'react-icons/io'
-import { MdOutlineWork } from 'react-icons/md';
-import { FaArrowCircleLeft, FaNewspaper, FaRegArrowAltCircleRight } from "react-icons/fa";
-import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { BsBusFront } from 'react-icons/bs';
+import { TbCategoryFilled } from "react-icons/tb";
 const sidebarData = [
     {
         label: "Dashboard",
         icon: <IoMdPie size={25} />,
-        link: "/admin/dashboard",
+        link: "/",
     },
     {
-        label: "Blog",
-        icon: <FaNewspaper size={25} />,
-        link: "/admin/blog"
-    },
-    {
-        label: "Blog List",
-        icon: <FaNewspaper size={25} />,
-        link: "/admin/bloglist"
-    },
-    {
-        label: "Spare parts",
-        icon: <BsBusFront size={25} />,
-        link: "/admin/spare-parts"
+        label: "Add category",
+        icon: <TbCategoryFilled size={25} />,
+        link: "/category",
     },
 
 ];
@@ -34,7 +21,7 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const handlelogout = () => {
         localStorage.removeItem("adminToken");
-        navigate("/admin");
+        navigate("/login");
     };
 
     return (

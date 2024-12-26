@@ -18,7 +18,7 @@ const adminCredentials = {
 
 
 
-const adminLogin = (req, res) => {
+export const adminLogin = async (req, res) => {
     try {
         const { email, password } = req.body.data;
 
@@ -55,7 +55,3 @@ const adminLogin = (req, res) => {
 
 
 
-export {
-    adminLogin,
-
-}

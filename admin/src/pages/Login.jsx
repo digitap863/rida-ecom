@@ -21,7 +21,7 @@ const Login = () => {
   
         if (response) {
           localStorage.setItem("adminToken", JSON.stringify(response.token));
-          navigate("/admin/dashboard");
+          navigate("/");
         }
       } catch (error) {
         console.log(error);
