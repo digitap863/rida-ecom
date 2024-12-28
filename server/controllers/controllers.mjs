@@ -1,15 +1,10 @@
 import "dotenv/config"
 import jwt from "jsonwebtoken"
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 
-// Convert import.meta.url to a filename
-const __filename = fileURLToPath(import.meta.url);
 
-// Get the directory name
-const __dirname = path.dirname(__filename);
+
+
 
 const adminCredentials = {
     adminid: process.env.ADMIN_EMAIL,

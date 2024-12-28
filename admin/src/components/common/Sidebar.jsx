@@ -1,7 +1,8 @@
 "use client";
 import { IoIosLogOut, IoMdPie } from 'react-icons/io'
 import { NavLink, useNavigate } from "react-router-dom";
-import { TbCategoryFilled } from "react-icons/tb";
+import { TbCategoryFilled, TbCategoryPlus } from "react-icons/tb";
+import { MdFiberManualRecord } from "react-icons/md";
 const sidebarData = [
     {
         label: "Dashboard",
@@ -9,10 +10,20 @@ const sidebarData = [
         link: "/",
     },
     {
-        label: "Add category",
+        label: "Category",
         icon: <TbCategoryFilled size={25} />,
         link: "/category",
     },
+    {
+        label: "Subcategory",
+        icon: <TbCategoryPlus  size={25} />,
+        link: "/subcategory",
+    },
+    {
+        label: "Manufacturer",
+        icon: <MdFiberManualRecord size={25} />,
+        link: "/manufacturer",
+    }
 
 ];
 

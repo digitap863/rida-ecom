@@ -1,44 +1,23 @@
-import { category as categorymodel } from "../model/category.mjs";
+import { manufacturer as manufacturerModel } from "../model/manufacturer.mjs";
 
 
-export const addCategory = async (req, res) => {
 
+export const addManufacturer = async (req, res) => {
     try {
-        const { name, category } = req.body;
-
-        if (name && category) {
-            const isExist = categorymodel.findOne({ name, category });
-            if (isExist) {
-                return res.status(400).send({ message: "Category already exists", success: false });
-            }
-            const addedcategory = new categorymodel({ name, category });
-            await addedcategory.save();
-            res.status(201).send({ message: "Category added successfully", success: true });
-        }
-
+        const { name, description, subcategory } = req.body;
+        const manufacturer = new manufacturerModel({ name, description, subcategory });
+        await manufacturer.save();  
+        res.status(201).send({ message: "Manufacturer added successfully", success: true });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message, success: false });
     }
 }
 
-
-export const getCategory = async (req, res) => {
-
+export const getManufacturer = async (req, res) => {
     try {
-        const categories = await categorymodel.find({});
-        res.status(200).send({ categories, success: true });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message, success: false });
-    }
-}
-
-export const deleteCategory = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await categorymodel.findByIdAndDelete(id);
-        res.status(200).send({ message: "Category deleted successfully", success: true });
+        const manufacturers = await manufacturerModel.find({});
+        res.status(200).send({ manufacturers, success: true });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message, success: false });
