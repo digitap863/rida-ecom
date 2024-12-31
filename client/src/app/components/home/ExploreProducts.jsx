@@ -30,7 +30,7 @@ const category = [
 
 const ExploreProducts = () => {
     return (
-        <div className='p-20'>
+        <div className='max-w-screen-2xl mx-auto p-20'>
             <div className='flex items-center gap-2'>
                 <h1 className='flex  font-urbanist  font-bold text-4xl'>Explore products <span className='pl-3 font-normal'> by category </span></h1>
                 <div className='h-1 w-4 rounded-lg bg-[#FEC500]'></div>

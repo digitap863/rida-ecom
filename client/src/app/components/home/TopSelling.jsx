@@ -4,7 +4,7 @@ import unit_1 from "@/assets/home/unit_1.png";
 import { Button } from "@/components/ui/button";
 const TopSelling = () => {
     return (
-        <div>
+        <div className="max-w-screen-2xl mx-auto">
             <div className="p-20">
                 <div className="flex items-center gap-2">
                     <h1 className="flex  font-urbanist  font-bold text-4xl">

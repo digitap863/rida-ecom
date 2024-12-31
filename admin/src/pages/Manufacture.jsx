@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteData, getdata, postData } from "@/api/req"
+import { deleteData, getdata, postData,postForm } from "../api/req"
 import {
   Dialog,
   DialogContent,
@@ -48,7 +48,7 @@ const Manufacture = () => {
   });
 
   const addManufacturerMutation = useMutation({
-    mutationFn: (data) => postData("/manufacturer", data),
+    mutationFn: (data) => postForm("/manufacturer", data),
     onSuccess: () => {
       toast.success("Manufacturer added successfully");
       queryClient.invalidateQueries(["manufacturers"]);
@@ -59,7 +59,7 @@ const Manufacture = () => {
   });
 
   const deleteManufacturerMutation = useMutation({
-    mutationFn: (id) => deleteData(`/manufacturer/${id}`),
+    mutationFn: (id) => deleteData(`/manufacturer/${id}`), // Changed from category to manufacturer
     onSuccess: () => {
       toast.success("Manufacturer deleted successfully");
       queryClient.invalidateQueries(["manufacturers"]);
@@ -87,6 +87,7 @@ const Manufacture = () => {
       try {
         await addManufacturerMutation.mutateAsync(formData);
         formik.resetForm();
+        document.getElementById("image").value = "";
       } catch (error) {
         console.error("Error adding manufacturer:", error);
       }

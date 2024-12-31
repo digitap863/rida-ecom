@@ -12,6 +12,7 @@ const Login = lazy(() => import("./pages/Login"))
 const Category = lazy(() => import("./pages/Category"))
 const Subcategory = lazy(() => import('./pages/Subcategory'))
 const Manufacture = lazy(()=>import('./pages/Manufacture'))
+const Products = lazy(()=>import('./pages/Products'))
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
               <Route path="/category" element={<Category />} />
               <Route path="/subcategory" element={<Subcategory />} />
               <Route path='/manufacturer' element={<Manufacture/>} />
+              <Route path='/product' element={<Products />} />
             </Route>
           </Routes>
         </Suspense>

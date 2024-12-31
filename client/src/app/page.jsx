@@ -1,5 +1,3 @@
-import Image from "next/image";
-import banner from "@/assets/home/banner.png";
 import Landing from "./components/home/Landing";
 import ExploreProducts from "./components/home/ExploreProducts";
 import ProvideBest from "./components/home/ProvideBest";

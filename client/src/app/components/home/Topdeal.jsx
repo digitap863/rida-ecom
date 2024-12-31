@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 
 const Topdeal = () => {
   return (
-    <div className='p-20'>
+    <div className='max-w-screen-2xl mx-auto p-20'>
       <div className='flex items-center gap-2'>
         <h1 className='flex  font-urbanist  font-bold text-4xl'>Top Deals on <span className='pl-3 font-normal'> Products </span></h1>
         <div className='h-1 w-4 rounded-lg bg-[#FEC500]'></div>

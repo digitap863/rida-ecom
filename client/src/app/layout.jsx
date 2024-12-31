@@ -1,8 +1,9 @@
 import localFont from "next/font/local";
 import { Urbanist, IBM_Plex_Mono, Poppins } from "next/font/google";
-import "../globals.css";
+import "./globals.css";
 import Footer from "./components/common/Footer";
 import Navbar from "./components/common/Navbar";
+import ReactQueryProvider from "@/util/provider/ReactQueryProvider";
 
 
 const ibmPlexMono = IBM_Plex_Mono({
@@ -24,7 +25,7 @@ const helvetica = localFont({
   src: [
     {
 
-      path: "../../../public/fonts/HelveticaNeueMedium.ttf",
+      path: "../../public/fonts/HelveticaNeueMedium.ttf",
       weight: "500",
     }
   ],
@@ -42,9 +43,11 @@ export default function RootLayout({ children }) {
       <body
         className={` ${urbanist.variable} ${ibmPlexMono.variable} ${poppins.variable} ${helvetica.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
+        <ReactQueryProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </ReactQueryProvider>
       </body>
     </html>
   );

@@ -1,20 +1,34 @@
 "use client";
 import { MoveRight, X } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "@/assets/home/Rida_logo.svg";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import { getdata } from "@/api/req";
+import { useQuery } from "@tanstack/react-query";
 
-const Categories = [
-  "BUS HVAC PARTS",
-  "TRANSPORT REFRIGERATION PARTS",
-  "TRUCK HVAC PARTS",
-  "VEHICLE AC",
-];
+
 
 const Navbar = () => {
+
   const [isClose, setIsClose] = useState(false);
+  const { data: categories = [] } = useQuery({
+    queryKey: ["category"],
+    queryFn: () => getdata("/category"),
+  });
+
+  const [Categories,setCategory] = useState([]);
+
+  console.log(categories?.data?.categories)
+  useEffect(() => {
+    setCategory(categories?.data?.categories)
+  }, [categories]);
+  
+
+
+
+
   return (
     <div>
       <div
@@ -88,9 +102,9 @@ const Navbar = () => {
         </div>
       </nav>
       <div className="bg-ind_blue h-16 w-full flex items-center justify-around text-white uppercase">
-        {Categories.map((category, index) => (
-          <Link href="/" key={index}>
-            {category}
+        {Categories && Categories?.map((category, index) => (
+          <Link href="/bus-hvac-parts/compressor/bock" key={index}>
+            {category?.category}
           </Link>
         ))}
       </div>

@@ -1,26 +1,38 @@
-import express from 'express';
-import {  adminLogin} from '../controllers/controllers.mjs';
-import { authMiddleware } from '../middleware/authMiddleware.mjs';
-import { addCategory, addSubcategory, deleteCategory, getCategory, getSubcategory } from '../controllers/categoryController.mjs';
-import { addManufacturer, getManufacturer } from '../controllers/productController.mjs';
-import { uploadS3 } from '../middleware/s3multer.mjs';
-
-
+import express from "express";
+import { adminLogin } from "../controllers/controllers.mjs";
+import { authMiddleware } from "../middleware/authMiddleware.mjs";
+import {
+  addCategory,
+  addSubcategory,
+  deleteCategory,
+  getCategory,
+  getSubcategory,
+} from "../controllers/categoryController.mjs";
+import {
+  addManufacturer,
+  addProducts,
+  deleteManufacturer,
+  deleteProduct,
+  getManufacturer,
+  getProducts,
+} from "../controllers/productController.mjs";
+import { uploadS3 } from "../middleware/s3multer.mjs";
 
 const router = express.Router();
 
-
-
-router.post("/login", adminLogin)
-router.post("/category", authMiddleware, addCategory)
-router.get("/category", authMiddleware, getCategory)
-router.delete("/category/:id", authMiddleware, deleteCategory)
-router.post("/subcategory", authMiddleware, addSubcategory)
-router.get("/subcategory", authMiddleware, getSubcategory)
+router.post("/login", adminLogin);
+router.post("/category", authMiddleware, addCategory);
+router.get("/category", getCategory);
+router.delete("/category/:id", authMiddleware, deleteCategory);
+router.post("/subcategory", authMiddleware, addSubcategory);
+router.get("/subcategory", authMiddleware, getSubcategory);
 // router.delete("/subcategory/:id", authMiddleware, deleteSubcategory)
 
+router.get("/manufacturer", authMiddleware, getManufacturer);
+router.post("/manufacturer", authMiddleware, uploadS3.any(), addManufacturer);
+router.delete("/manufacturer/:id", authMiddleware, deleteManufacturer);
 
-router.get("/manufacturer", authMiddleware, getManufacturer)
-router.post("/manufacturer", authMiddleware,uploadS3 ,addManufacturer)
-
+router.get("/product", authMiddleware, getProducts);
+router.post("/product", authMiddleware, uploadS3.any(), addProducts);
+router.delete("/product/:id", authMiddleware, deleteProduct)
 export default router;

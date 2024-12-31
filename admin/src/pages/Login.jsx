@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { adminLogin } from "@/api/req";
+import { adminLogin } from "../api/req";
 
 
 const Login = () => {

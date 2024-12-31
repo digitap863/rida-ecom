@@ -3,6 +3,7 @@ import { IoIosLogOut, IoMdPie } from 'react-icons/io'
 import { NavLink, useNavigate } from "react-router-dom";
 import { TbCategoryFilled, TbCategoryPlus } from "react-icons/tb";
 import { MdFiberManualRecord } from "react-icons/md";
+import { FaProductHunt } from "react-icons/fa";
 const sidebarData = [
     {
         label: "Dashboard",
@@ -23,6 +24,11 @@ const sidebarData = [
         label: "Manufacturer",
         icon: <MdFiberManualRecord size={25} />,
         link: "/manufacturer",
+    },
+    {
+        label: "Product",
+        icon: <FaProductHunt size={25} />,
+        link: "/product",
     }
 
 ];

@@ -1,3 +1,8 @@
+import "dotenv/config";
+import multer from "multer";
+import multerS3 from "multer-s3";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+
 
 const s3 = new S3Client({
     region: process.env.REGION,
@@ -15,8 +20,8 @@ export const uploadS3 = multer({
             cb(null, { fieldName: file.fieldname });
         },
         key: function (req, file, cb) {
-            // cb(null, `${Date.now()}>${file.originalname}`);
-            cb(null, `products/${Date.now().toString()}_${file.originalname}`);
+            cb(null, `${Date.now()}>${file.originalname}`);
+            // cb(null, `products/${Date.now()}_${file.originalname}`);
         },
     }),
     limits: {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteData, getdata, postData } from "@/api/req"
+import { deleteData, getdata, postData } from "../api/req"
 import {
   Dialog,
   DialogContent,
