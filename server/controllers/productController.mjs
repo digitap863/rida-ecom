@@ -1,6 +1,9 @@
 import { deleteFile } from "../middleware/s3multer.mjs";
 import { manufacturer as manufacturerModel } from "../model/manufacturer.mjs";
 import { product as productModel } from "../model/product.mjs";
+import { subcategory } from "../model/subcategory.mjs";
+import { category as categorymodel } from "../model/category.mjs";
+
 
 export const addManufacturer = async (req, res) => {
     try {
@@ -74,17 +77,18 @@ export const deleteManufacturer = async (req, res) => {
 //products
 export const addProducts = async (req, res) => {
     try {
-        const { partNumber, oe, description, manufacturer } = req.body;
+        const { partNumber, oe, manufacturer,category,subcategory } = req.body;
         const image = req.files[0].location;
         const key = req.files[0].key;
-        if (partNumber && oe && description && manufacturer) {
+        if (partNumber && oe  && manufacturer && category && subcategory) {
             const product = new productModel({
                 partNumber,
                 oe,
-                description,
                 manufacturer,
                 image,
-                imageKey: key
+                imageKey: key,
+                category,
+                subcategory
             });
             await product.save();
             res
@@ -139,4 +143,125 @@ export const deleteProduct = async (req, res) => {
         console.log(error.message);
         res.status(500).send({ message: error.message, success: false });
     }
+};
+
+
+// Utility function to create a URL-friendly slug
+export const createSlug = (text) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')    // Remove non-word chars
+    .replace(/[\s_-]+/g, '-')    // Replace spaces and _ with -
+    .replace(/^-+|-+$/g, '');    // Remove leading/trailing -
+};
+
+export const categoryNavigation = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Find the category by ID
+    const categoryData = await categorymodel.findById(id)
+      .select('name category')
+      .lean();
+
+    if (!categoryData) {
+      return res.status(404).send({
+        message: 'Category not found',
+        success: false,
+      });
+    }
+
+    const categorySlug = createSlug(categoryData.name);
+
+    // Fetch subcategories
+    const subcategories = await subcategory.find({ category: id })
+      .select('name image imageKey')
+      .lean();
+
+    let allProducts = [];
+    const detailedSubcategories = await Promise.all(
+      subcategories.map(async (sub) => {
+        const subcategorySlug = createSlug(sub.name);
+
+        // Fetch manufacturers
+        const manufacturers = await manufacturerModel.find({ subcategory: sub._id })
+          .select('name image key description')
+          .lean();
+
+        const detailedManufacturers = await Promise.all(
+          manufacturers.map(async (mfr) => {
+            const manufacturerSlug = createSlug(mfr.name);
+            console.log('manufacturerSlug', manufacturerSlug);
+            
+            // Create URL path
+            const urlPath = `/${categorySlug}/${subcategorySlug}/${manufacturerSlug}`;
+            console.log('urlPath', urlPath);
+
+            const products = await productModel.find({ manufacturer: mfr._id })
+              .select('partNumber image imageKey')
+              .lean();
+
+            // Add products to the combined products array
+            allProducts = [...allProducts, ...products.map(p => ({
+              ...p,
+              manufacturerName: mfr.name,
+              subcategoryName: sub.name,
+              urlPath
+            }))];
+
+            return {
+              id: mfr._id,
+              name: mfr.name,
+              image: mfr.image,
+              key: mfr.key,
+              description: mfr.description,
+              slug: manufacturerSlug,
+              urlPath,
+              products: products.map(p => ({
+                id: p._id,
+                partNumber: p.partNumber,
+                image: p.image,
+                imageKey: p.imageKey
+              }))
+            };
+          })
+        );
+
+        return {
+          id: sub._id,
+          name: sub.name,
+          image: sub.image,
+          imageKey: sub.imageKey,
+          slug: subcategorySlug,
+          urlPath: `/${categorySlug}/${subcategorySlug}`,
+          manufacturers: detailedManufacturers
+        };
+      })
+    );
+
+    const response = {
+      category: {
+        id: categoryData._id,
+        name: categoryData.name,
+        category: categoryData.category,
+        slug: categorySlug,
+        urlPath: `/${categorySlug}`
+      },
+      subcategories: detailedSubcategories,
+      allProducts // Combined products array
+    };
+
+    res.status(200).send({
+      message: 'Category navigation data fetched successfully',
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
+  }
 };

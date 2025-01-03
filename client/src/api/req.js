@@ -62,21 +62,43 @@ export const putForm = async (route, data) => {
     }
 };
 
+// export async function getdata(route) {
+//     return AxiosAdmin.get(route, {
+//         headers: {
+//             "Content-Type": "application/json",
+//             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+//         },
+//         // withCredentials: true,
+//     }).catch((error) => {
+//         if (error.response && error.response.status === 401) {
+//             console.log(error.response.data.message);
+//             localStorage.removeItem("adminToken");
+//             window.location.href = "/login";
+//         }
+//         throw error;
+//     });
+// }
 export async function getdata(route) {
-    return AxiosAdmin.get(route, {
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-        },
-        // withCredentials: true,
-    }).catch((error) => {
+
+    try {
+        const res = await AxiosAdmin.get(route, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+            // withCredentials: true,
+        });
+        return res.data;
+    } catch (error) {
         if (error.response && error.response.status === 401) {
             console.log(error.response.data.message);
             localStorage.removeItem("adminToken");
             window.location.href = "/login";
         }
         throw error;
-    });
+
+    }
+
 }
 
 
@@ -86,7 +108,7 @@ export async function deleteData(route) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
         },
-     
+
     }).catch((error) => {
         if (error.response && error.response.status === 401) {
             console.log(error.response.data.message);

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteData, getdata, postData } from "../api/req"
+import { deleteData, getdata, postData, postForm } from "../api/req"
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,9 @@ const validationSchema = Yup.object({
   name: Yup.string()
     .required("Subcategory name is required")
     .min(2, "Subcategory name must be at least 2 characters"),
-  category: Yup.string().required("Category is required")
+  category: Yup.string().required("Category is required"),
+  image: Yup.mixed().required("Image is required"),
+
 })
 
 const Subcategory = () => {
@@ -40,7 +42,7 @@ const Subcategory = () => {
 
   const queryClient = useQueryClient();
   const addCategoryMutation = useMutation({
-    mutationFn: (data) => postData("/subcategory", data),
+    mutationFn: (data) => postForm("/subcategory", data),
     onError: (error) => {
       toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`);
     },
@@ -51,7 +53,7 @@ const Subcategory = () => {
   });
 
   const deleteCategoryMutation = useMutation({
-    mutationFn: (id) => deleteData(`/category/${id}`),
+    mutationFn: (id) => deleteData(`/subcategory/${id}`),
     onError: (error) => {
       toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`);
     },
@@ -65,17 +67,18 @@ const Subcategory = () => {
     initialValues: {
       name: "",
       category: "",
+      image: null,
     },
     validationSchema,
     onSubmit: async (values) => {
-      // Format the category data
-      const categoryData = {
-        name: values.name,
-        categoryId:values.category 
-      }
+      const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("categoryId", values.category);
+      formData.append("image", values.image);
       try {
-        await addCategoryMutation.mutateAsync(categoryData);
+        await addCategoryMutation.mutateAsync(formData);
         formik.resetForm();
+        document.getElementById("image").value = "";
       } catch (error) {
         console.error("Error adding category:", error);
       }
@@ -104,14 +107,14 @@ const Subcategory = () => {
         <div className="w-1/3">
           <Card>
             <CardHeader>
-              <CardTitle>Add New Category</CardTitle>
+              <CardTitle>Add New SubCategory</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={formik.handleSubmit} className="space-y-4">
+              <form onSubmit={formik.handleSubmit} className="">
                 <div className="">
                   <label htmlFor="name" className="text-sm font-medium ">Select Category</label>
-                  <Select 
-                    name="category" 
+                  <Select
+                    name="category"
                     value={formik.values.category}
                     onValueChange={(value) => formik.setFieldValue('category', value)}
                     onBlur={formik.handleBlur}
@@ -130,28 +133,49 @@ const Subcategory = () => {
                   {formik.touched.category && formik.errors.category && (
                     <div className="text-red-500 text-xs">{formik.errors.category}</div>
                   )}
-                  <label htmlFor="name" className="text-sm font-medium mt-2 ">
-                    Subcategory Name
-                  </label>
-                  <Input
-                    id="name"
-                    name="name"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className={`mt-2 ${formik.touched.name && formik.errors.name ? "border-red-500" : ""}`}
-                    disabled={addCategoryMutation.isLoading}
-                  />
-                  {formik.touched.name && formik.errors.name && (
-                    <div className="text-red-500 text-xs">{formik.errors.name}</div>
-                  )}
+                  <div className="mt-2">
+                    <label htmlFor="name" className="text-sm font-medium  ">
+                      Subcategory Name
+                    </label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className={`mt-2 ${formik.touched.name && formik.errors.name ? "border-red-500" : ""}`}
+                      disabled={addCategoryMutation.isLoading}
+                    />
+                    {formik.touched.name && formik.errors.name && (
+                      <div className="text-red-500 text-xs">{formik.errors.name}</div>
+                    )}
+                  </div>
+                  <div className="mt-2">
+                    <label htmlFor="image" className="text-sm font-medium">
+                      Image
+                    </label>
+                    <Input
+                      id="image"
+                      name="image"
+                      type="file"
+                      onChange={(event) => {
+                        formik.setFieldValue("image", event.currentTarget.files[0]);
+                      }}
+                      onBlur={formik.handleBlur}
+                      className={`mt-2 ${formik.touched.image && formik.errors.image ? "border-red-500" : ""}`}
+                    />
+                    {formik.touched.image && formik.errors.image && (
+                      <div className="text-red-500 text-xs">{formik.errors.image}</div>
+                    )}
+                  </div>
+
                 </div>
                 <Button
                   type="submit"
-                  className="w-full"
-                  disabled={addCategoryMutation.isLoading || !formik.isValid || !formik.dirty}
+                  className="w-full mt-4"
+                  disabled={addCategoryMutation.isPending || !formik.isValid || !formik.dirty}
                 >
-                  {addCategoryMutation.isLoading ? "Adding..." : "Add Subcategory"}
+                  {addCategoryMutation.isPending ? "Adding..." : "Add Subcategory"}
                 </Button>
               </form>
             </CardContent>
@@ -167,21 +191,29 @@ const Subcategory = () => {
                 {subcategories?.data?.data?.map((category) => (
                   <div
                     key={category?._id}
-                    className="grid grid-cols-3 items-center justify-between p-3 border rounded hover:bg-accent"
+                    className="grid grid-cols-4 items-center justify-between p-3 border rounded hover:bg-accent"
                   >
+                    <div>
+                      <img
+                        src={category?.image}
+                        alt={category?.name}
+                        className="w-10 h-10 object-cover rounded-full"
+                      />
+                    </div>
                     <span className="font-medium">{category?.name}</span>
                     <span className="text-sm">{category?.category?.name}</span>
                     <div className="flex justify-end items-center space-x-2">
 
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="w-fit self-end"
-                      onClick={() => handleDelete(category._id)}
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="w-fit self-end"
+                        onClick={() => handleDelete(category._id)}
                       >
-                      Delete
-                    </Button>
-                      </div>
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

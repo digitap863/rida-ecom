@@ -5,36 +5,47 @@ import React, { useEffect, useState } from "react";
 import logo from "@/assets/home/Rida_logo.svg";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { getdata } from "@/api/req";
-import { useQuery } from "@tanstack/react-query";
+import { getdata, postData } from "@/api/req";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
+import { useRouter } from 'next/navigation'
 
 
 const Navbar = () => {
-
+  const router = useRouter();
   const [isClose, setIsClose] = useState(false);
-  const { data: categories = [] } = useQuery({
+  const { data } = useQuery({
     queryKey: ["category"],
     queryFn: () => getdata("/category"),
   });
 
-  const [Categories,setCategory] = useState([]);
-
-  console.log(categories?.data?.categories)
-  useEffect(() => {
-    setCategory(categories?.data?.categories)
-  }, [categories]);
-  
 
 
 
+
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const mutateNavigation = useMutation({
+    mutationFn: (id) => postData(`/navigation/${id}`),
+    onSuccess: (response) => {
+      const { data: { data } } = response;
+      console.log(data);
+
+      router.push(`${data.subcategories[0].manufacturers[0].urlPath}`);
+
+    },
+  });
+  const handleNavigation = async (id) => {
+    setSelectedCategory(id);
+    await mutateNavigation.mutateAsync(id);
+
+  };
 
   return (
     <div>
       <div
-        className={`h-8 w-full bg-ind_blue flex items-center justify-center relative ${
-          isClose ? "hidden" : "block"
-        }`}
+        className={`h-8 w-full bg-ind_blue flex items-center justify-center relative ${isClose ? "hidden" : "block"
+          }`}
       >
         <p className="uppercase text-white font-ibmMono flex gap-2 items-center text-center">
           NATIONAL DAY Sale is LIVE! <MoveRight />
@@ -73,7 +84,7 @@ const Navbar = () => {
             <Link href={"/"}>Home</Link>
             <Link href={"/"}>Products</Link>
             <Link href={"/"}>
-              <Image src={logo} alt="logo"  />
+              <Image src={logo} alt="logo" />
             </Link>
             <Link href={"/"}>Solution</Link>
             <Link href={"/"}>Contact Us</Link>
@@ -102,11 +113,28 @@ const Navbar = () => {
         </div>
       </nav>
       <div className="bg-ind_blue h-16 w-full flex items-center justify-around text-white uppercase">
-        {Categories && Categories?.map((category, index) => (
-          <Link href="/bus-hvac-parts/compressor/bock" key={index}>
-            {category?.category}
-          </Link>
-        ))}
+        {/* {Categories &&
+          Categories?.map((category, index) => (
+            <div
+              className="cursor-pointer"
+              onClick={() => handleNavigation(category._id)}
+              key={index}
+            >
+              {category?.category}
+            </div>
+          ))} */}
+        {data ?
+          data?.categories?.map((category, index) => (
+            <Link
+              href={`${category.category}`}
+              className="cursor-pointer"
+              key={index}
+            >
+              {category?.category}
+            </Link>
+          )):""}
+
+
       </div>
     </div>
   );
