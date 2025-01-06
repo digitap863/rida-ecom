@@ -1,34 +1,19 @@
 import Layout from "@/components/layout/Layout"
-import { useFormik } from "formik"
-import * as Yup from "yup"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteData, getdata, postData, postForm } from "../api/req"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog"
+import { deleteData, getdata } from "../api/req"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-
-const validationSchema = Yup.object({
-  name: Yup.string()
-    .required("Subcategory name is required")
-    .min(2, "Subcategory name must be at least 2 characters"),
-  category: Yup.string().required("Category is required"),
-  image: Yup.mixed().required("Image is required"),
-
-})
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { useNavigate } from "react-router-dom"
 
 const Subcategory = () => {
+  const navigate = useNavigate()
   // Single query for categories
   const { data: categories = [] } = useQuery({
     queryKey: ["category"],
@@ -39,54 +24,10 @@ const Subcategory = () => {
     queryFn: () => getdata("/subcategory"),
   });
 
-
-  const queryClient = useQueryClient();
-  const addCategoryMutation = useMutation({
-    mutationFn: (data) => postForm("/subcategory", data),
-    onError: (error) => {
-      toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`);
-    },
-    onSuccess: () => {
-      toast.success("Subcategory added successfully");
-      queryClient.invalidateQueries(["subcategory"]);
-    }
-  });
-
-  const deleteCategoryMutation = useMutation({
-    mutationFn: (id) => deleteData(`/subcategory/${id}`),
-    onError: (error) => {
-      toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`);
-    },
-    onSuccess: () => {
-      toast.success("Subcategory deleted successfully");
-      queryClient.invalidateQueries(["subcategory"]);
-    }
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      name: "",
-      category: "",
-      image: null,
-    },
-    validationSchema,
-    onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("name", values.name);
-      formData.append("categoryId", values.category);
-      formData.append("image", values.image);
-      try {
-        await addCategoryMutation.mutateAsync(formData);
-        formik.resetForm();
-        document.getElementById("image").value = "";
-      } catch (error) {
-        console.error("Error adding category:", error);
-      }
-    },
-  })
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all")
+  const [searchQuery, setSearchQuery] = useState("")
 
   const handleDelete = (id) => {
     setCategoryToDelete(id);
@@ -95,131 +36,123 @@ const Subcategory = () => {
 
   const confirmDelete = async () => {
     if (categoryToDelete) {
-      await deleteCategoryMutation.mutateAsync(categoryToDelete);
+      await deleteData(`/subcategory/${categoryToDelete}`);
       setCategoryToDelete(null);
       setIsDialogOpen(false);
     }
   }
 
+  // Filter subcategories based on selected category and search query
+  const filteredSubcategories = subcategories?.data?.data?.filter((subcategory) => {
+    const matchesCategory = selectedCategoryFilter === "all" || subcategory.category?._id === selectedCategoryFilter
+    const matchesSearch = !searchQuery || 
+      subcategory.name.toLowerCase().includes(searchQuery.toLowerCase())
+
+    return matchesCategory && matchesSearch
+  })
+
   return (
     <Layout>
-      <div className="flex gap-4 p-4">
-        <div className="w-1/3">
-          <Card>
-            <CardHeader>
-              <CardTitle>Add New SubCategory</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={formik.handleSubmit} className="">
-                <div className="">
-                  <label htmlFor="name" className="text-sm font-medium ">Select Category</label>
-                  <Select
-                    name="category"
-                    value={formik.values.category}
-                    onValueChange={(value) => formik.setFieldValue('category', value)}
-                    onBlur={formik.handleBlur}
-                  >
-                    <SelectTrigger className={`w-full mt-2 ${formik.touched.category && formik.errors.category ? "border-red-500" : ""}`}>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent >
-                      {categories?.data?.categories?.map((category) => (
-                        <SelectItem key={category._id} value={category._id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formik.touched.category && formik.errors.category && (
-                    <div className="text-red-500 text-xs">{formik.errors.category}</div>
-                  )}
-                  <div className="mt-2">
-                    <label htmlFor="name" className="text-sm font-medium  ">
-                      Subcategory Name
-                    </label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formik.values.name}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      className={`mt-2 ${formik.touched.name && formik.errors.name ? "border-red-500" : ""}`}
-                      disabled={addCategoryMutation.isLoading}
-                    />
-                    {formik.touched.name && formik.errors.name && (
-                      <div className="text-red-500 text-xs">{formik.errors.name}</div>
-                    )}
-                  </div>
-                  <div className="mt-2">
-                    <label htmlFor="image" className="text-sm font-medium">
-                      Image
-                    </label>
-                    <Input
-                      id="image"
-                      name="image"
-                      type="file"
-                      onChange={(event) => {
-                        formik.setFieldValue("image", event.currentTarget.files[0]);
-                      }}
-                      onBlur={formik.handleBlur}
-                      className={`mt-2 ${formik.touched.image && formik.errors.image ? "border-red-500" : ""}`}
-                    />
-                    {formik.touched.image && formik.errors.image && (
-                      <div className="text-red-500 text-xs">{formik.errors.image}</div>
-                    )}
-                  </div>
-
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full mt-4"
-                  disabled={addCategoryMutation.isPending || !formik.isValid || !formik.dirty}
-                >
-                  {addCategoryMutation.isPending ? "Adding..." : "Add Subcategory"}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="w-2/3 max-w-screen-md">
-          <Card>
-            <CardHeader>
+      <div className="p-4">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
               <CardTitle>Subcategories</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {subcategories?.data?.data?.map((category) => (
-                  <div
-                    key={category?._id}
-                    className="grid grid-cols-4 items-center justify-between p-3 border rounded hover:bg-accent"
-                  >
-                    <div>
-                      <img
-                        src={category?.image}
-                        alt={category?.name}
-                        className="w-10 h-10 object-cover rounded-full"
-                      />
-                    </div>
-                    <span className="font-medium">{category?.name}</span>
-                    <span className="text-sm">{category?.category?.name}</span>
-                    <div className="flex justify-end items-center space-x-2">
-
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="sm"
-                        className="w-fit self-end"
-                        onClick={() => handleDelete(category._id)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+              <Button onClick={() => navigate("/add-subcategory")}>
+                Add New Subcategory
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Filters Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="relative">
+                <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
+                <Input
+                  placeholder="Search subcategories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
               </div>
-            </CardContent>
-          </Card>
-        </div>
+
+              <Select 
+                value={selectedCategoryFilter} 
+                onValueChange={setSelectedCategoryFilter}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories?.data?.categories?.map((category) => (
+                    <SelectItem key={category._id} value={category._id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSelectedCategoryFilter("all")
+                  setSearchQuery("")
+                }}
+              >
+                Reset Filters
+              </Button>
+            </div>
+
+            {/* Table Section */}
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredSubcategories?.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center">
+                        No subcategories found
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredSubcategories?.map((subcategory) => (
+                      <TableRow key={subcategory._id}>
+                        <TableCell>
+                          <img
+                            src={subcategory.image}
+                            alt={subcategory.name}
+                            className="w-10 h-10 object-cover rounded-full"
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {subcategory.name}
+                        </TableCell>
+                        <TableCell>{subcategory.category?.name}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDelete(subcategory._id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Move Dialog outside the map function */}

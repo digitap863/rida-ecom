@@ -27,14 +27,14 @@ const sidebarData = [
         link: "/manufacturer",
     },
     {
-        label: "Product",
+        label: "Product Add",
         icon: <FaProductHunt size={25} />,
-        link: "/product",
+        link: "/product-add",
     },
     {
-        label: "Product List",
+        label: "Products",
         icon: <AlignVerticalSpaceBetween size={25} />,
-        link: "/product-list",
+        link: "/products",
     }
 
 ];

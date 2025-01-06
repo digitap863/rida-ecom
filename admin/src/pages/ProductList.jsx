@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react"
 import Layout from "@/components/layout/Layout"
-import { useQuery } from "@tanstack/react-query"
-import { getdata } from "../api/req"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { getdata, deleteData } from "../api/req"
 import {
   Table,
   TableBody,
@@ -14,13 +14,29 @@ import {
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Search } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { toast } from "sonner"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { useNavigate } from "react-router-dom"
 
 const ProductList = () => {
   const [selectedCategory, setSelectedCategory] = useState("")
   const [selectedSubcategory, setSelectedSubcategory] = useState("")
   const [selectedManufacturer, setSelectedManufacturer] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [itemToDelete, setItemToDelete] = useState(null)
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   // Fetch all required data
   const { data: categories = [] } = useQuery({
@@ -52,10 +68,21 @@ const ProductList = () => {
     const matchesManufacturer = !selectedManufacturer || product.manufacturer?._id === selectedManufacturer
     const matchesSearch = !searchQuery || 
       product.partNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.oe.some(oe => oe.toLowerCase().includes(searchQuery.toLowerCase()))
+      product.name.toLowerCase().includes(searchQuery.toLowerCase())
 
     return matchesCategory && matchesSubcategory && matchesManufacturer && matchesSearch
   })
+
+  // Pagination logic
+  const totalItems = filteredProducts?.length || 0
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentItems = filteredProducts?.slice(startIndex, endIndex)
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+  }
 
   const resetFilters = () => {
     setSelectedCategory("")
@@ -64,18 +91,49 @@ const ProductList = () => {
     setSearchQuery("")
   }
 
+  // Add delete mutation
+  const deleteProductMutation = useMutation({
+    mutationFn: (id) => deleteData(`/product/${id}`),
+    onSuccess: () => {
+      toast.success("Product deleted successfully")
+      queryClient.invalidateQueries(["products"])
+    },
+    onError: (error) => {
+      toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`)
+    }
+  })
+
+  // Add delete handlers
+  const handleDelete = (id) => {
+    setItemToDelete(id)
+    setIsDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (itemToDelete) {
+      await deleteProductMutation.mutateAsync(itemToDelete)
+      setItemToDelete(null)
+      setIsDialogOpen(false)
+    }
+  }
+
   return (
     <Layout>
       <div className="p-4 space-y-4">
         <div className="flex flex-col gap-4">
-          <h2 className="text-2xl font-bold">Products List</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Products List</h2>
+            <Button onClick={() => navigate("/product-add")}>
+              Add New Product
+            </Button>
+          </div>
           
           {/* Filters Section */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-lg shadow">
             <div className="relative">
               <Search className="absolute left-2 top-3 h-4 w-4 text-gray-500" />
               <Input
-                placeholder="Search part number or OE..."
+                placeholder="Search part number or name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-8"
@@ -145,7 +203,7 @@ const ProductList = () => {
                 <TableRow>
                   <TableHead>Image</TableHead>
                   <TableHead>Part Number</TableHead>
-                  <TableHead>OE Numbers</TableHead>
+                  <TableHead>Name</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Subcategory</TableHead>
                   <TableHead>Manufacturer</TableHead>
@@ -159,14 +217,14 @@ const ProductList = () => {
                       Loading...
                     </TableCell>
                   </TableRow>
-                ) : filteredProducts?.length === 0 ? (
+                ) : currentItems?.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center">
                       No products found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredProducts?.map((product) => (
+                  currentItems?.map((product) => (
                     <TableRow key={product._id}>
                       <TableCell>
                         <img 
@@ -176,7 +234,7 @@ const ProductList = () => {
                         />
                       </TableCell>
                       <TableCell className="font-medium">{product.partNumber}</TableCell>
-                      <TableCell>{product.oe.join(", ")}</TableCell>
+                      <TableCell>{product.name}</TableCell>
                       <TableCell>{product.category?.name}</TableCell>
                       <TableCell>{product.subcategory?.name}</TableCell>
                       <TableCell>{product.manufacturer?.name}</TableCell>
@@ -185,7 +243,11 @@ const ProductList = () => {
                           <Button variant="outline" size="sm">
                             Edit
                           </Button>
-                          <Button variant="destructive" size="sm">
+                          <Button 
+                            variant="destructive" 
+                            size="sm"
+                            onClick={() => handleDelete(product._id)}
+                          >
                             Delete
                           </Button>
                         </div>
@@ -196,8 +258,82 @@ const ProductList = () => {
               </TableBody>
             </Table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalItems > 0 && (
+            <div className="flex items-center justify-between px-2">
+              <div className="text-sm text-gray-500">
+                Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} results
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center space-x-1">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <Button
+                      key={i + 1}
+                      variant={currentPage === i + 1 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(i + 1)}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this product? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   )
 }

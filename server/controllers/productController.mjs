@@ -10,7 +10,6 @@ export const addManufacturer = async (req, res) => {
         const { name, description, subcategory,category } = req.body;
         const image = req.files[0].location;
         const key = req.files[0].key;
-        console.log(req.files);
         if (image && name && description && subcategory && category) {
             const manufacturer = new manufacturerModel({
                 name,
@@ -78,13 +77,13 @@ export const deleteManufacturer = async (req, res) => {
 //products
 export const addProducts = async (req, res) => {
     try {
-        const { partNumber, oe, manufacturer,category,subcategory } = req.body;
+        const { partNumber, name, manufacturer,category,subcategory } = req.body;
         const image = req.files[0].location;
         const key = req.files[0].key;
-        if (partNumber && oe  && manufacturer && category && subcategory) {
+        if (partNumber && name  && manufacturer && category && subcategory) {
             const product = new productModel({
                 partNumber,
-                oe,
+                name,
                 manufacturer,
                 image,
                 imageKey: key,
@@ -108,7 +107,7 @@ export const addProducts = async (req, res) => {
 
 export const getProducts = async (req, res) => {
     try {
-        const products = await productModel.find({});
+        const products = await productModel.find({}).populate('manufacturer').populate('subcategory').populate('category');
         res.status(200).send({ products, success: true });
     } catch (error) {
         console.log(error.message);
