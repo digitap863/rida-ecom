@@ -5,7 +5,8 @@ import cors from "cors"
 import nodemailer from "nodemailer"
 import axios from "axios"
 import { dbConnect } from "./config/db.mjs";
-import router from "./routes/routes.mjs";
+import adminRouter from "./routes/adminRoutes.mjs";
+import clientRouter from "./routes/clientRoutes.mjs";
 const app = express();
 const port = process.env.PORT || 8080;
 
@@ -20,7 +21,8 @@ app.use("/api/uploads", express.static("uploads"));
 
 
 dbConnect()
-app.use("/api/", router)
+app.use("/api/admin", adminRouter)
+app.use("/api", clientRouter)
 
 //contact us mail service
 app.post("/api/contact", async (req, res) => {

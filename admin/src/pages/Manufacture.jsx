@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteData, getdata, postData,postForm } from "../api/req"
+import { deleteData, getdata,postForm } from "../api/req"
 import {
   Dialog,
   DialogContent,
@@ -27,6 +27,7 @@ const validationSchema = Yup.object({
     .required("Description is required")
     .min(10, "Description must be at least 10 characters"),
   image: Yup.mixed().required("Image is required"),
+  category: Yup.string().required("Category is required"),
   subcategory: Yup.string().required("Subcategory is required"),
 })
 
@@ -34,11 +35,20 @@ const Manufacture = () => {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getdata("/category"),
+  });
+
 
   // Fetch subcategories
   const { data: subcategories = [] } = useQuery({
-    queryKey: ["subcategory"],
-    queryFn: () => getdata("/subcategory"),
+    queryKey: ["subcategories", selectedCategory],
+    queryFn: () => getdata(`/category/${selectedCategory}`),
+    enabled: !!selectedCategory
   });
 
   // Fetch manufacturers
@@ -59,7 +69,7 @@ const Manufacture = () => {
   });
 
   const deleteManufacturerMutation = useMutation({
-    mutationFn: (id) => deleteData(`/manufacturer/${id}`), // Changed from category to manufacturer
+    mutationFn: (id) => deleteData(`/manufacturer/${id}`), 
     onSuccess: () => {
       toast.success("Manufacturer deleted successfully");
       queryClient.invalidateQueries(["manufacturers"]);
@@ -74,6 +84,7 @@ const Manufacture = () => {
       name: "",
       description: "",
       image: null,
+      category: "",
       subcategory: "",
     },
     validationSchema,
@@ -82,11 +93,13 @@ const Manufacture = () => {
       formData.append("name", values.name);
       formData.append("description", values.description);
       formData.append("image", values.image);
-      formData.append("subcategory", values.subcategory);
-
+      formData.append("category", selectedCategory);
+      formData.append("subcategory", selectedSubcategory);
       try {
         await addManufacturerMutation.mutateAsync(formData);
         formik.resetForm();
+        setSelectedCategory('');
+        setSelectedSubcategory('');
         document.getElementById("image").value = "";
       } catch (error) {
         console.error("Error adding manufacturer:", error);
@@ -170,20 +183,47 @@ const Manufacture = () => {
                       <div className="text-red-500 text-xs">{formik.errors.image}</div>
                     )}
                   </div>
+                  <div>
+                    <label>Category</label>
+                    <Select
+                      name="category"
+                      value={selectedCategory}
+                      onValueChange={(value) => {
+                        setSelectedCategory(value);
+                        setSelectedSubcategory('');
+                        formik.setFieldValue('subcategory', '');
+                        formik.setFieldValue('category', value);
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories?.data?.categories?.map((category) => (
+                          <SelectItem key={category._id} value={category._id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                   <div>
-                    <label className="text-sm font-medium">Select Subcategory</label>
+                    <label>Subcategory</label>
                     <Select
                       name="subcategory"
-                      value={formik.values.subcategory}
-                      onValueChange={(value) => formik.setFieldValue('subcategory', value)}
-                      onBlur={formik.handleBlur}
+                      value={selectedSubcategory}
+                      onValueChange={(value) => {
+                        setSelectedSubcategory(value);
+                        formik.setFieldValue('subcategory', value);
+                      }}
+                      disabled={!selectedCategory}
                     >
                       <SelectTrigger className={`w-full mt-2 ${formik.touched.subcategory && formik.errors.subcategory ? "border-red-500" : ""}`}>
                         <SelectValue placeholder="Select a subcategory" />
                       </SelectTrigger>
                       <SelectContent>
-                        {subcategories?.data?.data?.map((subcategory) => (
+                        {subcategories?.data?.subcategories?.map((subcategory) => (
                           <SelectItem key={subcategory._id} value={subcategory._id}>
                             {subcategory.name}
                           </SelectItem>

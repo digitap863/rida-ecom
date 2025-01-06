@@ -1,5 +1,5 @@
 import express from "express";
-import { adminLogin } from "../controllers/controllers.mjs";
+import { adminLogin } from "../controllers/authControllers.mjs";
 import { authMiddleware } from "../middleware/authMiddleware.mjs";
 import {
   addCategory,
@@ -27,7 +27,7 @@ const router = express.Router();
 
 router.post("/login", adminLogin);
 router.post("/category", authMiddleware, addCategory);
-router.get("/category", getCategory);
+router.get("/category", authMiddleware, getCategory);
 router.delete("/category/:id", authMiddleware, deleteCategory);
 router.post("/subcategory", authMiddleware,uploadS3.any(),addSubcategory);
 router.get("/subcategory", authMiddleware, getSubcategory);
@@ -44,9 +44,7 @@ router.get("/product", authMiddleware, getProducts);
 router.post("/product", authMiddleware, uploadS3.any(), addProducts);
 router.delete("/product/:id", authMiddleware, deleteProduct)
 
-//client routes
-router.post("/navigation/:id",categoryNavigation)
-router.get("/category/:category",getCategoryData)
+
 
 
 

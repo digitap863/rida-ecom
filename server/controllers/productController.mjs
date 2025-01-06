@@ -7,15 +7,16 @@ import { category as categorymodel } from "../model/category.mjs";
 
 export const addManufacturer = async (req, res) => {
     try {
-        const { name, description, subcategory } = req.body;
+        const { name, description, subcategory,category } = req.body;
         const image = req.files[0].location;
         const key = req.files[0].key;
         console.log(req.files);
-        if (image && name && description && subcategory) {
+        if (image && name && description && subcategory && category) {
             const manufacturer = new manufacturerModel({
                 name,
                 description,
                 subcategory,
+                category,
                 image,
                 key,
             });

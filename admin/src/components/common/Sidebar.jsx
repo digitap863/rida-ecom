@@ -4,6 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { TbCategoryFilled, TbCategoryPlus } from "react-icons/tb";
 import { MdFiberManualRecord } from "react-icons/md";
 import { FaProductHunt } from "react-icons/fa";
+import { AlignVerticalSpaceBetween } from 'lucide-react';
 const sidebarData = [
     {
         label: "Dashboard",
@@ -29,6 +30,11 @@ const sidebarData = [
         label: "Product",
         icon: <FaProductHunt size={25} />,
         link: "/product",
+    },
+    {
+        label: "Product List",
+        icon: <AlignVerticalSpaceBetween size={25} />,
+        link: "/product-list",
     }
 
 ];

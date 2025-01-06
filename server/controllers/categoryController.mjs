@@ -156,10 +156,10 @@ export const getCategoryData = async (req, res) => {
             });
         }
 
-        // Find all subcategories for the category
-        const subcategories = await subcategoryModel.find({
-            category: findCategory._id,
-        });
+        // Find all subcategories and populate their manufacturers
+        const subcategories = await subcategoryModel
+            .find({ category: findCategory._id })
+            .lean();
 
         if (!subcategories || subcategories.length === 0) {
             return res.status(404).json({
@@ -168,35 +168,39 @@ export const getCategoryData = async (req, res) => {
             });
         }
 
-        // Find manufacturers for the first subcategory
+        // Get all manufacturers for all subcategories
+        const allManufacturers = await manufacturerModel
+            .find({
+                subcategory: { $in: subcategories.map(sub => sub._id) }
+            })
+            .lean();
+
+        // Get all products for the category
+        const products = await productModel
+            .find({ category: findCategory._id })
+            .populate('manufacturer')
+            .lean();
+
+        // Set default subcategory and manufacturer
         const defaultSubcategory = subcategories[0];
-        const manufacturers = await manufacturerModel.find({
-            subcategory: defaultSubcategory._id,
-        });
+        const defaultManufacturer = allManufacturers.find(
+            m => m.subcategory.toString() === defaultSubcategory._id.toString()
+        );
 
-        if (!manufacturers || manufacturers.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "No manufacturers found for the default subcategory",
-            });
-        }
+        // Group products by manufacturer
+        const defaultProducts = products.filter(
+            p => p.manufacturer._id.toString() === defaultManufacturer._id.toString()
+        );
 
-        // Find products for the first manufacturer of the first subcategory
-        const defaultManufacturer = manufacturers[0];
-        const products = await productModel.find({
-            manufacturer: defaultManufacturer._id,
-        });
-
-        // Return all the data
         res.status(200).json({
             success: true,
             data: {
                 category: findCategory,
                 subcategories,
                 defaultSubcategory,
-                manufacturers,
+                manufacturers: allManufacturers,
                 defaultManufacturer,
-                products,
+                products: defaultProducts
             },
         });
     } catch (error) {

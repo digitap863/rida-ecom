@@ -13,7 +13,7 @@ const Category = lazy(() => import("./pages/Category"))
 const Subcategory = lazy(() => import('./pages/Subcategory'))
 const Manufacture = lazy(()=>import('./pages/Manufacture'))
 const Products = lazy(()=>import('./pages/Products'))
-
+const ProductsList = lazy(()=>import('./pages/ProductList'))
 function App() {
 
 
@@ -32,6 +32,7 @@ function App() {
               <Route path="/subcategory" element={<Subcategory />} />
               <Route path='/manufacturer' element={<Manufacture/>} />
               <Route path='/product' element={<Products />} />
+              <Route path='/product-list' element={<ProductsList />} />
             </Route>
           </Routes>
         </Suspense>

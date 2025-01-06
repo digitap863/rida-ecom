@@ -2,14 +2,35 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
- const AccordionItem = ({ title, items, isFirst }) => {
+import Image from "next/image";
+
+const AccordionItem = ({ 
+  title, 
+  items, 
+  isFirst, 
+  onSubcategorySelect, 
+  onManufacturerSelect 
+}) => {
   const [isOpen, setIsOpen] = useState(isFirst);
+
+  const handleSubcategoryClick = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen && onSubcategorySelect) {
+      onSubcategorySelect();
+    }
+  };
+
+  const handleManufacturerClick = (manufacturerId) => {
+    if (onManufacturerSelect) {
+      onManufacturerSelect(manufacturerId);
+    }
+  };
 
   return (
     <div className={`border-b border-gray-100 py-2 ${isFirst ? "" : "mt-4"}`}>
       <motion.div
         className="flex items-center gap-3 cursor-pointer group"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleSubcategoryClick}
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2 }}
       >
@@ -43,24 +64,29 @@ import { useState } from "react";
             }}
           >
             <ul className="ml-7 mt-3 space-y-2">
-              {items.map((item, index) => (
+              {items.map((item) => (
                 <motion.li
-                  key={index}
-                  className="flex gap-3 items-center font-urbanist font-medium text-gray-600 py-2 px-3 rounded-lg hover:bg-gray-50"
+                  key={item.id}
+                  className="flex gap-3 items-center font-urbanist font-medium text-gray-600 py-2 px-3 rounded-lg hover:bg-gray-50 cursor-pointer"
                   whileHover={{ x: 8, backgroundColor: "#f8fafc" }}
                   transition={{ duration: 0.2 }}
+                  onClick={() => handleManufacturerClick(item.id)}
                 >
-                  <motion.div
-                    whileHover={{ rotate: -45 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronRight
-                      size={18}
-                      strokeWidth={2.5}
-                      className="p-1 border border-gray-600 rounded-full"
-                    />
-                  </motion.div>
-                  {item}
+                  <div className="flex items-center gap-3 w-full">
+                    <motion.div
+                      whileHover={{ rotate: -45 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronRight
+                        size={18}
+                        strokeWidth={2.5}
+                        className="p-1 border border-gray-600 rounded-full"
+                      />
+                    </motion.div>
+                    <div className="flex items-center gap-2 flex-1">
+                      <span className="flex-1">{item.name}</span>
+                    </div>
+                  </div>
                 </motion.li>
               ))}
             </ul>
@@ -71,4 +97,4 @@ import { useState } from "react";
   );
 };
 
-export default AccordionItem
+export default AccordionItem;
