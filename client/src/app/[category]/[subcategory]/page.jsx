@@ -52,7 +52,7 @@ const Subcategory = ({ params }) => {
             : [{ // Default item for empty subcategories
                 id: 'no-manufacturer',
                 name: 'No Manufacturers Available',
-                image: bock, // Default image
+                // image: bock, // Default image
                 description: 'No manufacturers are currently available for this subcategory.'
               }],
           isFirst: subcat._id === currentSubcategory._id,
@@ -73,7 +73,7 @@ const Subcategory = ({ params }) => {
       setSelectedManufacturer({
         name: 'No Manufacturers Available',
         description: 'No manufacturers are currently available for this subcategory.',
-        image: bock
+        // image: bock
       });
       setFilteredProducts([]);
       return;
@@ -130,21 +130,25 @@ const Subcategory = ({ params }) => {
             <div className="flex gap-10 justify-between">
               <div className="w-1/2 font-urbanist">
                 <h1 className="text-ind_blue text-4xl font-bold uppercase">
-                  {selectedManufacturer?.name || 'No Manufacturer Selected'}
+                  {selectedManufacturer?.name || 'No Manufacturer'}
                 </h1>
                 <p className="font-medium">
                   {selectedManufacturer?.description || 
-                    'Please select a manufacturer from the sidebar to view products.'}
+                    ''}
                 </p>
               </div>
               <div className="w-1/2">
+              {
+                selectedManufacturer?.image && (
                 <Image 
-                  src={selectedManufacturer?.image || bock} 
-                  alt={selectedManufacturer?.name || "Default manufacturer"}
+                src={selectedManufacturer?.image} 
+                  alt={selectedManufacturer?.name}
                   width={400}
                   height={300}
                   className="object-contain"
                 />
+                )
+              }
               </div>
             </div>
             <div className="grid grid-cols-3 gap-4 mt-10">
@@ -161,9 +165,9 @@ const Subcategory = ({ params }) => {
                       />
                     </div>
                     <div className="p-5 font-urbanist space-y-3">
-                      <h3 className="font-bold text-lg">{product.partNumber}</h3>
+                      <h3 className="font-bold text-lg">{product.name}</h3>
                       <p className="text-[#5E5E5E] font-medium">
-                        {Array.isArray(product.oe) ? product.oe.join(', ') : product.oe}
+                        {product.partNumber}
                       </p>
                       <Button className="w-full border text-ind_blue hover:bg-ind_blue hover:text-white border-ind_blue bg-transparent">
                         View Details

@@ -257,18 +257,22 @@ export const getCategoryBySlug = async (req, res) => {
             })
             .lean();
 
-        // Get the default manufacturer (first one)
-        const defaultManufacturer = manufacturers[0];
+        // Get products and default manufacturer only if manufacturers exist
+        let products = [];
+        let defaultManufacturer = null;
 
-        // Get products for the current manufacturer
-        const products = await productModel
-            .find({ 
-                manufacturer: defaultManufacturer._id,
-                category: findCategory._id,
-                subcategory: currentSubcategory._id
-            })
-            .populate('manufacturer')
-            .lean();
+        if (manufacturers.length > 0) {
+            defaultManufacturer = manufacturers[0];
+            
+            products = await productModel
+                .find({ 
+                    manufacturer: defaultManufacturer._id,
+                    category: findCategory._id,
+                    subcategory: currentSubcategory._id
+                })
+                .populate('manufacturer')
+                .lean();
+        }
 
         res.status(200).json({
             success: true,
