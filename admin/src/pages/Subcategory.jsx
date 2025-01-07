@@ -1,8 +1,6 @@
 import Layout from "@/components/layout/Layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "sonner"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { deleteData, getdata } from "../api/req"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useState } from "react"
@@ -11,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useNavigate } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 
 const Subcategory = () => {
   const navigate = useNavigate()

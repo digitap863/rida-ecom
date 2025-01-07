@@ -12,8 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // Update validation schema
 const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
   partNumber: Yup.string().required("Part number is required"),
-  oe: Yup.string().required("OE numbers are required"),
   image: Yup.mixed().required("Image is required"),
   manufacturer: Yup.string().required("Manufacturer is required"),
   category: Yup.string().required("Category is required"),

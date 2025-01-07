@@ -16,6 +16,7 @@ const validationSchema = Yup.object({
     .min(2, "Subcategory name must be at least 2 characters"),
   category: Yup.string().required("Category is required"),
   image: Yup.mixed().required("Image is required"),
+  
 })
 
 const AddSubcategory = () => {
@@ -32,7 +33,7 @@ const AddSubcategory = () => {
     onSuccess: () => {
       toast.success("Subcategory added successfully")
       queryClient.invalidateQueries(["subcategory"])
-      navigate("/subcategories") // Navigate back to subcategories list
+      navigate("/subcategory") // Navigate back to subcategories list
     },
     onError: (error) => {
       toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`)
@@ -51,6 +52,7 @@ const AddSubcategory = () => {
       formData.append("name", values.name)
       formData.append("categoryId", values.category)
       formData.append("image", values.image)
+      formData.append("subcategory", values.name.toLowerCase().replace(/\s+/g, "-"))
       try {
         await addCategoryMutation.mutateAsync(formData)
       } catch (error) {

@@ -52,7 +52,7 @@ export const deleteCategory = async (req, res) => {
 
 export const addSubcategory = async (req, res) => {
     try {
-        const { name, categoryId } = req.body;
+        const { name, categoryId, subcategory } = req.body;
         const image = req.files[0].location;
         const imageKey = req.files[0].key;
 
@@ -63,14 +63,15 @@ export const addSubcategory = async (req, res) => {
                 .status(404)
                 .json({ success: false, message: "Category not found" });
         }
-        const subcategory = new subcategoryModel({
+        const addedSubcategory = new subcategoryModel({
             name,
             category: categoryId,
+            subcategory,
             image,
             imageKey,
         });
-        await subcategory.save();
-        res.status(201).json({ success: true, data: subcategory });
+        await addedSubcategory.save();
+        res.status(201).json({ success: true, data: addedSubcategory });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
@@ -201,6 +202,134 @@ export const getCategoryData = async (req, res) => {
                 manufacturers: allManufacturers,
                 defaultManufacturer,
                 products: defaultProducts
+            },
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+export const getCategoryBySlug = async (req, res) => {
+    try {
+        const { category, subcategory } = req.params;
+
+        // Find the category by slug
+        const findCategory = await categorymodel.findOne({ category });
+        if (!findCategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        // Find all subcategories for this category
+        const subcategories = await subcategoryModel
+            .find({ category: findCategory._id })
+            .lean();
+
+        if (!subcategories || subcategories.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No subcategories found for this category",
+            });
+        }
+
+        // Find the current subcategory or use the first one
+        const currentSubcategory = subcategory 
+            ? subcategories.find(sub => sub.subcategory === subcategory)
+            : subcategories[0];
+
+        if (!currentSubcategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Subcategory not found",
+            });
+        }
+
+        // Get all manufacturers for all subcategories
+        const manufacturers = await manufacturerModel
+            .find({
+                subcategory: currentSubcategory._id
+            })
+            .lean();
+
+        // Get the default manufacturer (first one)
+        const defaultManufacturer = manufacturers[0];
+
+        // Get products for the current manufacturer
+        const products = await productModel
+            .find({ 
+                manufacturer: defaultManufacturer._id,
+                category: findCategory._id,
+                subcategory: currentSubcategory._id
+            })
+            .populate('manufacturer')
+            .lean();
+
+        res.status(200).json({
+            success: true,
+            data: {
+                category: findCategory,
+                subcategories,
+                currentSubcategory,
+                manufacturers,
+                defaultManufacturer,
+                products
+            },
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+export const getManufacturerProducts = async (req, res) => {
+    try {
+        const { category, subcategory, manufacturerId } = req.params;
+
+        // First, find the category by slug
+        const findCategory = await categorymodel.findOne({ category });
+        if (!findCategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found",
+            });
+        }
+
+        // Then, find the subcategory by slug and category
+        const findSubcategory = await subcategoryModel.findOne({ 
+            subcategory: subcategory,
+            category: findCategory._id 
+        });
+        if (!findSubcategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Subcategory not found",
+            });
+        }
+
+        // Now get the products
+        const products = await productModel
+            .find({ 
+                manufacturer: manufacturerId,
+                category: findCategory._id,
+                subcategory: findSubcategory._id
+            })
+            .populate('manufacturer')
+            .lean();
+
+        res.status(200).json({
+            success: true,
+            data: {
+                products,
+                manufacturer: await manufacturerModel.findById(manufacturerId).lean()
             },
         });
     } catch (error) {

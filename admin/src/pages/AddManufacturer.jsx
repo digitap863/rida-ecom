@@ -46,7 +46,7 @@ const AddManufacturer = () => {
     onSuccess: () => {
       toast.success("Manufacturer added successfully")
       queryClient.invalidateQueries(["manufacturers"])
-      navigate("/manufacturers")
+      navigate("/manufacturer")
     },
     onError: (error) => {
       toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`)

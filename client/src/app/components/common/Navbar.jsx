@@ -7,39 +7,36 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { getdata, postData } from "@/api/req";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
 
-import { useRouter } from 'next/navigation'
+
 
 
 const Navbar = () => {
-  const router = useRouter();
+
   const [isClose, setIsClose] = useState(false);
   const { data } = useQuery({
     queryKey: ["category"],
     queryFn: () => getdata("/category"),
+    // staleTime: 1000 * 60 * 5,
+    // cacheTime: 1000 * 60 * 30,
   });
 
 
-
-
-
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
-  const mutateNavigation = useMutation({
-    mutationFn: (id) => postData(`/navigation/${id}`),
-    onSuccess: (response) => {
-      const { data: { data } } = response;
-      console.log(data);
-
-      router.push(`${data.subcategories[0].manufacturers[0].urlPath}`);
-
-    },
+  const { data: subcategoriesData } = useQuery({
+    queryKey: ["subcategories"],
+    queryFn: () => getdata("/subcategories"),
+    // staleTime: 1000 * 60 * 5,
+    // cacheTime: 1000 * 60 * 30,
   });
-  const handleNavigation = async (id) => {
-    setSelectedCategory(id);
-    await mutateNavigation.mutateAsync(id);
+  
 
-  };
 
   return (
     <div>
@@ -112,29 +109,40 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-      <div className="bg-ind_blue h-16 w-full flex items-center justify-around text-white uppercase">
-        {/* {Categories &&
-          Categories?.map((category, index) => (
-            <div
-              className="cursor-pointer"
-              onClick={() => handleNavigation(category._id)}
-              key={index}
-            >
-              {category?.category}
-            </div>
-          ))} */}
-        {data ?
-          data?.categories?.map((category, index) => (
-            <Link
-              href={`${category.category}`}
-              className="cursor-pointer"
-              key={index}
-            >
-              {category?.category}
-            </Link>
-          )):""}
-
-
+      <div className="bg-ind_blue h-16 w-full flex items-center justify-around text-white">
+        <NavigationMenu>
+          <NavigationMenuList>
+            {data?.categories?.map((category, index) => (
+              <NavigationMenuItem key={index}>
+                <NavigationMenuTrigger className="bg-transparent text-white hover:bg-ind_blue/50">
+                  {category.name}
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid gap-3 p-6 w-[400px] bg-white text-black">
+                    {subcategoriesData?.data
+                      ?.filter((sub) => sub.category._id === category._id)
+                      ?.map((subcategory, idx) => (
+                        <Link
+                          key={idx}
+                          href={`/${category.category}/${subcategory.subcategory}`}
+                          className="block p-2 hover:bg-slate-100 rounded-md"
+                        >
+                          <div className="flex items-center gap-3">
+                            <img 
+                              src={subcategory.image} 
+                              alt={subcategory.name}
+                              className="w-10 h-10 object-cover rounded"
+                            />
+                            <span>{subcategory.name}</span>
+                          </div>
+                        </Link>
+                      ))}
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
     </div>
   );
