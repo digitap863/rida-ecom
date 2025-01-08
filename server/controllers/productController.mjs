@@ -55,9 +55,7 @@ export const deleteManufacturer = async (req, res) => {
         }
         const key = manufacturer.key;
         try {
-            // Delete the image from S3
             await deleteFile(key);
-            // Delete the manufacturer from database
             await manufacturerModel.findByIdAndDelete(id);
             res
                 .status(200)
@@ -74,12 +72,11 @@ export const deleteManufacturer = async (req, res) => {
     }
 };
 
-//products
-export const addProducts = async (req, res) => {
+
+export const addProducts = async (req, res) => {    
     try {
         const { partNumber, name, manufacturer, category, subcategory, model, description } = req.body;
         
-        // Validate that files were uploaded
         if (!req.files || req.files.length === 0) {
             return res.status(400).send({ 
                 message: "At least one image is required", 
@@ -87,7 +84,6 @@ export const addProducts = async (req, res) => {
             });
         }
 
-        // Get arrays of image locations and keys from uploaded files
         const images = req.files.map(file => file.location);
         const imageKeys = req.files.map(file => file.key);
 
@@ -96,8 +92,8 @@ export const addProducts = async (req, res) => {
                 partNumber,
                 name,
                 manufacturer,
-                image: images,      // Store array of image URLs
-                imageKey: imageKeys, // Store array of S3 keys
+                image: images,      
+                imageKey: imageKeys, 
                 category,
                 subcategory,
                 model,
@@ -145,11 +141,9 @@ export const deleteProduct = async (req, res) => {
         }
 
         try {
-            // Delete all images from S3
             const deletePromises = product.imageKey.map(key => deleteFile(key));
             await Promise.all(deletePromises);
             
-            // Delete the product from database
             await productModel.findByIdAndDelete(id);
             res.status(200).send({ 
                 message: "Product deleted successfully", 

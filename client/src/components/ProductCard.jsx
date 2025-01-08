@@ -28,8 +28,29 @@ const ProductCard = ({ product }) => {
     );
   };
 
+  const handleClick = () => {
+    const categorySlug = product?.category?.category || '';
+    const subcategorySlug = product?.subcategory?.subcategory || '';
+    const manufacturerSlug = product?.manufacturer?.slug || product?.manufacturer?.name || '';
+    const productSlug = product?.slug || '';
+
+    if (categorySlug && subcategorySlug && manufacturerSlug && productSlug) {
+        router.push(`/${categorySlug}/${subcategorySlug}/${manufacturerSlug}/${productSlug}`);
+    } else {
+        console.error('Missing required slugs for navigation:', {
+            categorySlug,
+            subcategorySlug,
+            manufacturerSlug,
+            productSlug
+        });
+    }
+  };
+
   return (
-    <Card className="aspect-[1/1.2] group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden">
+    <Card 
+        className="aspect-[1/1.2] group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden"
+        onClick={handleClick}
+    >
       {/* Image Container */}
       <div className="p-3 h-[200px] relative">
         {/* Loading Skeleton */}

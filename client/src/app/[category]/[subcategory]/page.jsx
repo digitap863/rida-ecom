@@ -27,9 +27,36 @@ const Subcategory = ({ params }) => {
     enabled: !!category && !!subcategory
   });
 
+  // Handle manufacturer selection
+  const handleManufacturerSelect = async (manufacturerId) => {
+    if (manufacturerId === 'no-manufacturer') {
+      setSelectedManufacturer({
+        name: 'No Manufacturers Available',
+        description: 'No manufacturers are currently available for this subcategory.'
+      });
+      setFilteredProducts([]);
+      return;
+    }
+
+    try {
+      const response = await getdata(
+        `/category/${category}/${subcategory}/manufacturer/${manufacturerId}`
+      );
+      
+      if (response.success) {
+        const { products, manufacturer } = response.data;
+        setSelectedManufacturer(manufacturer);
+        setFilteredProducts(products || []); // Ensure products is always an array
+      }
+    } catch (error) {
+      console.error("Error fetching manufacturer products:", error);
+      setFilteredProducts([]); // Reset products on error
+    }
+  };
+
   // Initial data setup
   useEffect(() => {
-   if (categoryData?.data) {
+    if (categoryData?.data) {
       const { currentSubcategory, defaultManufacturer, manufacturers, subcategories, products } = categoryData.data;
       
       // Transform data for accordion
@@ -61,35 +88,9 @@ const Subcategory = ({ params }) => {
       setSidebarData(accordionData);
       setSelectedSubcategory(currentSubcategory);
       setSelectedManufacturer(defaultManufacturer || null);
-      setFilteredProducts(products || []);
+      setFilteredProducts(products || []); // Ensure products is always an array
     }
   }, [categoryData]);
-
-  // Only handle manufacturer selection
-  const handleManufacturerSelect = async (manufacturerId) => {
-    if (manufacturerId === 'no-manufacturer') {
-      setSelectedManufacturer({
-        name: 'No Manufacturers Available',
-        description: 'No manufacturers are currently available for this subcategory.'
-      });
-      setFilteredProducts([]);
-      return;
-    }
-
-    try {
-      const response = await getdata(
-        `/category/${category}/${subcategory}/manufacturer/${manufacturerId}`
-      );
-      
-      if (response.success) {
-        const { products, manufacturer } = response.data;
-        setSelectedManufacturer(manufacturer);
-        setFilteredProducts(products);
-      }
-    } catch (error) {
-      console.error("Error fetching manufacturer products:", error);
-    }
-  };
 
   // Add this function to handle subcategory opening
   const handleSubcategoryOpen = async (subcategoryId) => {
