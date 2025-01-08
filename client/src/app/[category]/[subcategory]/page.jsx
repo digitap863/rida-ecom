@@ -1,15 +1,13 @@
 "use client";
 import Image from "next/image";
 import React, { use, useEffect, useState } from "react";
-import bock from "@/assets/category/bock.png";
-import prod from "@/assets/category/prod.png";
 import { Card } from "@/components/ui/card";
 import AccordionItem from "@/app/components/common/AccordionItem";
-import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getdata } from "@/api/req";
 import { useRouter, usePathname } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
+
 
 const Subcategory = ({ params }) => {
   const resolvedParams = use(params);
@@ -29,12 +27,12 @@ const Subcategory = ({ params }) => {
     enabled: !!category && !!subcategory
   });
 
-  // Set up initial data
+  // Initial data setup
   useEffect(() => {
-    if (categoryData?.data) {
+   if (categoryData?.data) {
       const { currentSubcategory, defaultManufacturer, manufacturers, subcategories, products } = categoryData.data;
       
-      // Transform data for accordion, handling empty subcategories
+      // Transform data for accordion
       const accordionData = subcategories.map(subcat => {
         const subcatManufacturers = manufacturers
           .filter(mfr => mfr.subcategory.toString() === subcat._id.toString());
@@ -50,10 +48,9 @@ const Subcategory = ({ params }) => {
                 image: mfr.image,
                 description: mfr.description
               }))
-            : [{ // Default item for empty subcategories
+            : [{ 
                 id: 'no-manufacturer',
                 name: 'No Manufacturers Available',
-                // image: bock, // Default image
                 description: 'No manufacturers are currently available for this subcategory.'
               }],
           isFirst: subcat._id === currentSubcategory._id,
@@ -68,13 +65,12 @@ const Subcategory = ({ params }) => {
     }
   }, [categoryData]);
 
+  // Only handle manufacturer selection
   const handleManufacturerSelect = async (manufacturerId) => {
-    // Skip API call for empty subcategories
     if (manufacturerId === 'no-manufacturer') {
       setSelectedManufacturer({
         name: 'No Manufacturers Available',
-        description: 'No manufacturers are currently available for this subcategory.',
-        // image: bock
+        description: 'No manufacturers are currently available for this subcategory.'
       });
       setFilteredProducts([]);
       return;
@@ -95,10 +91,42 @@ const Subcategory = ({ params }) => {
     }
   };
 
-  const handleSubcategorySelect = (subcategoryId) => {
-    const subcategory = sidebarData?.find(item => item.id === subcategoryId);
-    if (subcategory) {
-      router.push(`/${category}/${subcategory.subcategorySlug}`);
+  // Add this function to handle subcategory opening
+  const handleSubcategoryOpen = async (subcategoryId) => {
+    try {
+      const response = await getdata(
+        `/category/${category}/${subcategory}/subcategory/${subcategoryId}`
+      );
+      
+      if (response.success) {
+        const { manufacturers } = response.data;
+        
+        // Update the sidebar data with new manufacturers
+        setSidebarData(prevData => 
+          prevData.map(item => {
+            if (item.id === subcategoryId) {
+              return {
+                ...item,
+                items: manufacturers.length > 0 
+                  ? manufacturers.map(mfr => ({
+                      id: mfr._id,
+                      name: mfr.name,
+                      image: mfr.image,
+                      description: mfr.description
+                    }))
+                  : [{ 
+                      id: 'no-manufacturer',
+                      name: 'No Manufacturers Available',
+                      description: 'No manufacturers are currently available for this subcategory.'
+                    }]
+              };
+            }
+            return item;
+          })
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching subcategory manufacturers:", error);
     }
   };
 
@@ -121,8 +149,9 @@ const Subcategory = ({ params }) => {
                   items={accordion.items}
                   isFirst={accordion.isFirst}
                   isEmpty={accordion.isEmpty}
-                  onSubcategorySelect={() => handleSubcategorySelect(accordion.id)}
+                  subcategoryId={accordion.id}
                   onManufacturerSelect={handleManufacturerSelect}
+                  onSubcategoryOpen={handleSubcategoryOpen}
                 />
               ))}
             </Card>
@@ -152,6 +181,7 @@ const Subcategory = ({ params }) => {
               }
               </div>
             </div>
+          
             <div className="grid grid-cols-3 gap-4 mt-10">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product, index) => (

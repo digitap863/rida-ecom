@@ -8,15 +8,16 @@ const AccordionItem = ({
   title, 
   items, 
   isFirst, 
-  onSubcategorySelect, 
-  onManufacturerSelect 
+  subcategoryId,
+  onManufacturerSelect,
+  onSubcategoryOpen
 }) => {
   const [isOpen, setIsOpen] = useState(isFirst);
 
   const handleSubcategoryClick = () => {
     setIsOpen(!isOpen);
-    if (!isOpen && onSubcategorySelect) {
-      onSubcategorySelect();
+    if (!isOpen && onSubcategoryOpen) {
+      onSubcategoryOpen(subcategoryId);
     }
   };
 

@@ -29,7 +29,7 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <Card className="aspect-[1/1.3] group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden">
+    <Card className="aspect-[1/1.2] group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden">
       {/* Image Container */}
       <div className="p-3 h-[200px] relative">
         {/* Loading Skeleton */}

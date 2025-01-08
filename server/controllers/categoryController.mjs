@@ -345,3 +345,27 @@ export const getManufacturerProducts = async (req, res) => {
     }
 };
 
+export const getSubcategoryManufacturers = async (req, res) => {
+    try {
+        const { subcategoryId } = req.params;
+
+        // Get manufacturers for this subcategory
+        const manufacturers = await manufacturerModel
+            .find({ subcategory: subcategoryId })
+            .lean();
+
+        res.status(200).json({
+            success: true,
+            data: {
+                manufacturers
+            }
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+};
+
