@@ -9,13 +9,11 @@ import {
   getByCategory,
   getBySubcategory,
   getCategory,
-  getCategoryData,
   getSubcategory,
 } from "../controllers/categoryController.mjs";
 import {
   addManufacturer,
   addProducts,
-  categoryNavigation,
   deleteManufacturer,
   deleteProduct,
   getManufacturer,

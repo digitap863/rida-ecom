@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getdata } from "@/api/req";
 import { useRouter, usePathname } from "next/navigation";
+import ProductCard from "@/components/ProductCard";
 
 const Subcategory = ({ params }) => {
   const resolvedParams = use(params);
@@ -154,26 +155,7 @@ const Subcategory = ({ params }) => {
             <div className="grid grid-cols-3 gap-4 mt-10">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product, index) => (
-                  <Card key={index} className="aspect-[1/1.2]">
-                    <div className="p-3">
-                      <Image 
-                        src={product.image} 
-                        alt={product.partNumber} 
-                        className="mx-auto object-contain" 
-                        width={200} 
-                        height={200} 
-                      />
-                    </div>
-                    <div className="p-5 font-urbanist space-y-3">
-                      <h3 className="font-bold text-lg">{product.name}</h3>
-                      <p className="text-[#5E5E5E] font-medium">
-                        {product.partNumber}
-                      </p>
-                      <Button className="w-full border text-ind_blue hover:bg-ind_blue hover:text-white border-ind_blue bg-transparent">
-                        View Details
-                      </Button>
-                    </div>
-                  </Card>
+                  <ProductCard key={index} product={product} />
                 ))
               ) : (
                 <div className="col-span-3 text-center py-10 text-gray-500">

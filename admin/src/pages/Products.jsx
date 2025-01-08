@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getdata, postForm } from "../api/req"
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 
 // Update validation schema
 const validationSchema = Yup.object({
@@ -18,6 +19,8 @@ const validationSchema = Yup.object({
   manufacturer: Yup.string().required("Manufacturer is required"),
   category: Yup.string().required("Category is required"),
   subcategory: Yup.string().required("Subcategory is required"),
+  model: Yup.string().required("Model is required"),
+  description: Yup.string().required("Description is required"),
 });
 
 const Products = () => {
@@ -57,20 +60,26 @@ const Products = () => {
     initialValues: {
       name: "",
       partNumber: "",
-      image: null,
+      image: [],
       manufacturer: "",
       category: "",
       subcategory: "",
+      model: "",
+      description: "",
     },
     validationSchema,
     onSubmit: async (values) => {
       const formData = new FormData();
       formData.append("partNumber", values.partNumber);
       formData.append("name", values.name);
-      formData.append("image", values.image);
+      values.image.forEach((file) => {
+        formData.append("files", file);
+      });
       formData.append("manufacturer", values.manufacturer);
       formData.append("category", selectedCategory);
       formData.append("subcategory", selectedSubcategory);
+      formData.append("model", values.model);
+      formData.append("description", values.description);
 
       try {
         await addProductMutation.mutateAsync(formData);
@@ -122,15 +131,47 @@ const Products = () => {
                   <div className="text-red-500 text-xs">{formik.errors.partNumber}</div>
                 )}
               </div>
-
               <div>
-                <label htmlFor="image">Image</label>
+                <label htmlFor="model">Model</label>
+                <Input
+                  id="model"
+                  name="model"
+                  value={formik.values.model}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={formik.touched.model && formik.errors.model ? "border-red-500" : ""}
+                />
+                {formik.touched.model && formik.errors.model && (
+                  <div className="text-red-500 text-xs">{formik.errors.model}</div>
+                )}
+              </div>
+              <div>
+                <label htmlFor="description">Description</label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={formik.touched.description && formik.errors.description ? "border-red-500" : ""}
+                  multiline={true}
+                  rows={4}
+                />
+                {formik.touched.description && formik.errors.description && (
+                  <div className="text-red-500 text-xs">{formik.errors.description}</div>
+                )}
+              </div>
+              <div>
+                <label htmlFor="image">Images (Select up to 3)</label>
                 <Input
                   id="image"
                   name="image"
                   type="file"
+                  multiple
+                  accept="image/*"
                   onChange={(event) => {
-                    formik.setFieldValue("image", event.currentTarget.files[0]);
+                    const files = Array.from(event.currentTarget.files).slice(0, 3);
+                    formik.setFieldValue("image", files);
                   }}
                   onBlur={formik.handleBlur}
                   className={formik.touched.image && formik.errors.image ? "border-red-500" : ""}
@@ -138,6 +179,28 @@ const Products = () => {
                 {formik.touched.image && formik.errors.image && (
                   <div className="text-red-500 text-xs">{formik.errors.image}</div>
                 )}
+
+                <div className="mt-4 flex gap-4">
+                  {formik.values.image && Array.from(formik.values.image).map((file, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`Preview ${index + 1}`}
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                        onClick={() => {
+                          const newFiles = Array.from(formik.values.image).filter((_, i) => i !== index);
+                          formik.setFieldValue("image", newFiles);
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-4">
