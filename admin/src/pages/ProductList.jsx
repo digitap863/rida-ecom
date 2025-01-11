@@ -25,6 +25,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 const ProductList = () => {
   const [selectedCategory, setSelectedCategory] = useState("")
@@ -208,6 +209,7 @@ const ProductList = () => {
                   <TableHead>Subcategory</TableHead>
                   <TableHead>Manufacturer</TableHead>
                   <TableHead>Actions</TableHead>
+                  <TableHead>Add Details</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -228,7 +230,7 @@ const ProductList = () => {
                     <TableRow key={product._id}>
                       <TableCell>
                         <img 
-                          src={product.image} 
+                          src={product.image[0]} 
                           alt={product.partNumber} 
                           className="w-12 h-12 object-cover rounded"
                         />
@@ -251,6 +253,14 @@ const ProductList = () => {
                             Delete
                           </Button>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <Link to={`/products/add-details/${product._id}`}>
+                        
+                          <Button variant="outline" size="sm">
+                            Add Details
+                          </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))

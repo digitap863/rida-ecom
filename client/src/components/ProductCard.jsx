@@ -7,8 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 const ProductCard = ({ product }) => {
-    console.log(product)
-    const router = useRouter();
+
+  const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 

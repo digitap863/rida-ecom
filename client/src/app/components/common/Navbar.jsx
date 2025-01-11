@@ -81,7 +81,7 @@ const Navbar = () => {
             <Link href={"/"}>Home</Link>
             <Link href={"/"}>Products</Link>
             <Link href={"/"}>
-              <Image src={logo} alt="logo" />
+              <Image src={logo} alt="logo"  priority={true}/>
             </Link>
             <Link href={"/"}>Solution</Link>
             <Link href={"/"}>Contact Us</Link>

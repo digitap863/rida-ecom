@@ -64,13 +64,16 @@ export const postForm = async (route, data) => {
 };
 export const putForm = async (route, data) => {
     try {
-        const response = await AxiosAdmin.put(route, data, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-            },
-        });
+        const headers = {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+        };
 
+        // Check if data is FormData
+        if (!(data instanceof FormData)) {
+            headers['Content-Type'] = 'application/json';
+        }
+
+        const response = await AxiosAdmin.put(route, data, { headers });
         return response;
     } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -116,3 +119,23 @@ export async function deleteData(route) {
         throw error;
     });
 }
+
+export const uploadImage = async (formData) => {
+    try {
+        const response = await AxiosAdmin.post('/upload-image', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.status === 401) {
+            console.log(error.response.data.message);
+            localStorage.removeItem("adminToken");
+            window.location.href = "/login";
+        }
+        throw error;
+    }
+};

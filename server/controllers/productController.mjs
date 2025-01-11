@@ -165,3 +165,80 @@ export const deleteProduct = async (req, res) => {
     }
 };
 
+export const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await productModel.findById(id);
+        res.status(200).send({ product, success: true });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message, success: false });
+    }
+}
+
+export const updateProductDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { specifications, technicalData, videoLink } = req.body;
+
+        // Find and update the product
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            id,
+            {
+                $set: {
+                    ...(specifications !== undefined && { specifications }),
+                    ...(technicalData !== undefined && { technicalData }),
+                    ...(videoLink !== undefined && { videoLink }),
+                    lastUpdated: new Date()
+                }
+            },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).send({
+                message: "Product not found",
+                success: false
+            });
+        }
+
+        res.status(200).send({
+            message: "Product details updated successfully",
+            success: true,
+            product: updatedProduct
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({
+            message: error.message,
+            success: false
+        });
+    }
+};
+
+export const getProductDetails = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await productModel.findById(id)
+            .select('specifications technicalData videoLink lastUpdated')
+            .lean();
+
+        if (!product) {
+            return res.status(404).send({
+                message: "Product not found",
+                success: false
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            product
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({
+            message: error.message,
+            success: false
+        });
+    }
+};

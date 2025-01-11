@@ -16,6 +16,8 @@ const Products = lazy(()=>import('./pages/Products'))
 const ProductsList = lazy(()=>import('./pages/ProductList'))
 const AddSubcategory = lazy(()=>import('./pages/AddSubcategory'))
 const AddManufacturer = lazy(()=>import('./pages/AddManufacturer'))
+const ProductDetails = lazy(()=>import('./pages/ProductDetailsAdding'))
+
 function App() {
 
 
@@ -37,7 +39,7 @@ function App() {
               <Route path='/add-manufacturer' element={<AddManufacturer/>} />
               <Route path='/product-add' element={<Products />} />
               <Route path='/products' element={<ProductsList />} />
-
+              <Route path='/products/add-details/:id' element={<ProductDetails />} />
             </Route>
           </Routes>
         </Suspense>

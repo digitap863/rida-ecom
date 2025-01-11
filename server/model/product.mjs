@@ -11,11 +11,34 @@ const productSchema = new mongoose.Schema({
     description: { type: String, required: true },
     manufacturer: { type: mongoose.Schema.Types.ObjectId, ref: 'Manufacturer', required: true },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
-    subcategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory', required: true }
+    subcategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory', required: true },
+    specifications: { 
+        type: String, 
+        default: '' 
+    },
+    technicalData: { 
+        type: String, 
+        default: '' 
+    },
+    videoLink: { 
+        type: String,
+        default: '' 
+    },
+    lastUpdated: { 
+        type: Date, 
+        default: Date.now 
+    }
+}, {
+    timestamps: true
 });
 
 productSchema.pre('save', function(next) {
     this.slug = this.name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '-');
+    next();
+});
+
+productSchema.pre('findOneAndUpdate', function(next) {
+    this._update.lastUpdated = new Date();
     next();
 });
 
