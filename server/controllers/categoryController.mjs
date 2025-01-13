@@ -436,13 +436,23 @@ export const getProductDetails = async (req, res) => {
             });
         }
 
+        // Find related products (same manufacturer and subcategory, excluding current product)
+        const relatedProducts = await productModel.find({
+            manufacturer: findManufacturer._id,
+            subcategory: findSubcategory._id,
+            _id: { $ne: findProduct._id } // exclude current product
+        })
+        .limit(4) // limit to 4 related products
+        .populate('manufacturer');
+
         res.status(200).json({
             success: true,
             data: {
                 product: findProduct,
                 category: findCategory,
                 subcategory: findSubcategory,
-                manufacturer: findManufacturer
+                manufacturer: findManufacturer,
+                relatedProducts 
             }
         });
     } catch (error) {
