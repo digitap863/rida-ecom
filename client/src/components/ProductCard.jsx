@@ -48,7 +48,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Card 
-        className="aspect-[1/1.4] group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden"
+        className="aspect-[1/1.2] group hover:shadow-lg transition-shadow duration-300 relative overflow-hidden"
         onClick={handleClick}
     >
       {/* Image Container */}
@@ -129,7 +129,7 @@ const ProductCard = ({ product }) => {
       <div className="p-5 font-urbanist space-y-3 absolute bottom-0 left-0 w-full">
 
         {/* Product Name */}
-        <h3 className="font-bold text-lg line-clamp-2 min-h-[30px]">
+        <h3 className="font-bold text-lg line-clamp-2 min-h-[30px] truncate">
           {product.name}
         </h3>
         {/* Part Number Badge */}

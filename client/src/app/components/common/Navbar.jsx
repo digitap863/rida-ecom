@@ -24,16 +24,16 @@ const Navbar = () => {
   const { data } = useQuery({
     queryKey: ["category"],
     queryFn: () => getdata("/category"),
-    // staleTime: 1000 * 60 * 5,
-    // cacheTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 30,
   });
 
 
   const { data: subcategoriesData } = useQuery({
     queryKey: ["subcategories"],
     queryFn: () => getdata("/subcategories"),
-    // staleTime: 1000 * 60 * 5,
-    // cacheTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 30,
   });
   
 

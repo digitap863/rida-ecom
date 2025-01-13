@@ -6,7 +6,7 @@ const Landing = () => {
   return (
     <div className="relative font-urbanist">
       <div className='bg-black/40 absolute inset-0'></div>
-      <Image src={banner} alt="" />
+      <Image src={banner} alt="" className="h-[80vh] object-cover"/>
       <div className='absolute  space-y-4 left-20 top-1/2 translate-y-[-50%]'>
         <h1 className='text-6xl text-white font-semibold'>Airconditioning Systems <br />
           For Any Vehicles</h1>
