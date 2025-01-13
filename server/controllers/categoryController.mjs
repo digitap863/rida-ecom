@@ -443,8 +443,10 @@ export const getProductDetails = async (req, res) => {
             _id: { $ne: findProduct._id } // exclude current product
         })
         .limit(4) // limit to 4 related products
-        .populate('manufacturer');
-
+        .populate('manufacturer')
+        .populate('category')
+        .populate('subcategory')
+        .lean();
         res.status(200).json({
             success: true,
             data: {
@@ -454,6 +456,62 @@ export const getProductDetails = async (req, res) => {
                 manufacturer: findManufacturer,
                 relatedProducts 
             }
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+};
+
+export const getProductSidebar = async (req, res) => {
+    try {
+        const { category, subcategory } = req.params;
+
+        // Find the category
+        const findCategory = await categorymodel.findOne({ category });
+        if (!findCategory) {
+            return res.status(404).json({
+                success: false,
+                message: "Category not found"
+            });
+        }
+
+        // Get all subcategories for this category
+        const subcategories = await subcategoryModel
+            .find({ category: findCategory._id })
+            .lean();
+
+        // Get all manufacturers for these subcategories
+        const manufacturers = await manufacturerModel
+            .find({
+                subcategory: { $in: subcategories.map(sub => sub._id) }
+            })
+            .lean();
+
+        // Transform data for accordion
+        const accordionData = subcategories.map(subcat => ({
+            id: subcat._id,
+            title: subcat.name,
+            subcategorySlug: subcat.subcategory,
+            items: manufacturers
+                .filter(mfr => mfr.subcategory.toString() === subcat._id.toString())
+                .map(mfr => ({
+                    id: mfr._id,
+                    name: mfr.name,
+                    image: mfr.image,
+                    description: mfr.description,
+                    slug: mfr.slug
+                })),
+            isFirst: subcat.subcategory === subcategory,
+            isEmpty: manufacturers.filter(mfr => mfr.subcategory.toString() === subcat._id.toString()).length === 0
+        }));
+
+        res.status(200).json({
+            success: true,
+            data: accordionData
         });
     } catch (error) {
         console.error(error.message);

@@ -2,7 +2,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import Image from "next/image";
+
 
 const AccordionItem = ({ 
   title, 

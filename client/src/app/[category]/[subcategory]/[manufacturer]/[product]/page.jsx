@@ -6,15 +6,25 @@ import Loading from '@/components/Loading';
 import { ProductImages } from './ProductImages';
 import { ProductDetails } from './ProductDetails';
 import { ProductContent } from './ProductContent';
+import AccordionItem from '@/app/components/common/AccordionItem';
+import { useRouter } from 'next/navigation';
+import { Card } from '@/components/ui/card';
 
 const ProductPage = ({ params }) => {
   const resolvedParams = use(params);
   const { category, subcategory, manufacturer, product } = resolvedParams;
+  const router = useRouter();
   
   const { data, error } = useQuery({
     queryKey: ["productData", category, subcategory, manufacturer, product],
     queryFn: () => getdata(`/category/${category}/${subcategory}/${manufacturer}/${product}`),
     enabled: !!category && !!subcategory && !!manufacturer && !!product
+  });
+
+  const { data: sidebarData } = useQuery({
+    queryKey: ["sidebarData", category, subcategory],
+    queryFn: () => getdata(`/category/${category}/${subcategory}/${manufacturer}/${product}/sidebar`),
+    enabled: !!category && !!subcategory
   });
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -24,6 +34,23 @@ const ProductPage = ({ params }) => {
       setSelectedImage(data.data.product.image[0]);
     }
   }, [data]);
+
+  const handleManufacturerSelect = (manufacturerId) => {
+    // Find the accordion (subcategory) that contains the selected manufacturer
+    const selectedAccordion = sidebarData?.data?.find(accordion => 
+      accordion.items.some(item => item.id === manufacturerId)
+    );
+
+    // Find the manufacturer within that accordion
+    const selectedManufacturer = selectedAccordion?.items.find(item => 
+      item.id === manufacturerId
+    );
+
+    if (selectedAccordion && selectedManufacturer) {
+      // Use the subcategorySlug from the selected accordion
+      router.push(`/${category}/${selectedAccordion.subcategorySlug}?manufacturer=${selectedManufacturer.slug}`);
+    }
+  };
 
   if (!data?.data?.product?.image) {
     return <div><Loading /></div>;
@@ -47,10 +74,26 @@ const ProductPage = ({ params }) => {
       <div className='mt-10'>
         <div className="flex gap-4">
           <ProductContent 
-            product={data.data.product}
-            relatedProducts={data.data.relatedProducts}
+            product={data?.data?.product}
+            relatedProducts={data?.data?.relatedProducts}
           />
-          <div className='w-1/4'>{/* Sidebar content */}</div>
+          <div className='w-1/4'>
+          <Card className="p-4 rounded min-h-screen">
+            {sidebarData?.data?.map((accordion, index) => (
+              <AccordionItem
+                key={accordion.id}
+                title={accordion.title}
+                items={accordion.items}
+                isFirst={accordion.isFirst}
+                isEmpty={accordion.isEmpty}
+                subcategoryId={accordion.id}
+                onManufacturerSelect={(manufacturerId) => {
+                  handleManufacturerSelect(manufacturerId);
+                }}
+              />
+            ))}
+            </Card>
+          </div>
         </div>
       </div>
     </div>

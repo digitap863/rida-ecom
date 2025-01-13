@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import AccordionItem from "@/app/components/common/AccordionItem";
 import { useQuery } from "@tanstack/react-query";
 import { getdata } from "@/api/req";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 
 
@@ -15,6 +15,8 @@ const Subcategory = ({ params }) => {
   
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const manufacturerSlug = searchParams.get('manufacturer');
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -57,7 +59,7 @@ const Subcategory = ({ params }) => {
   // Initial data setup
   useEffect(() => {
     if (categoryData?.data) {
-      const { currentSubcategory, defaultManufacturer, manufacturers, subcategories, products } = categoryData.data;
+      const { currentSubcategory, manufacturers, subcategories, products } = categoryData.data;
       
       // Transform data for accordion
       const accordionData = subcategories.map(subcat => {
@@ -87,10 +89,21 @@ const Subcategory = ({ params }) => {
 
       setSidebarData(accordionData);
       setSelectedSubcategory(currentSubcategory);
-      setSelectedManufacturer(defaultManufacturer || null);
-      setFilteredProducts(products || []); // Ensure products is always an array
+
+      // If manufacturer slug is in URL, find and select that manufacturer
+      if (manufacturerSlug && manufacturers.length > 0) {
+        const matchingManufacturer = manufacturers.find(m => m.slug === manufacturerSlug);
+        if (matchingManufacturer) {
+          handleManufacturerSelect(matchingManufacturer._id);
+        }
+      } else {
+        // Default behavior
+        const defaultManufacturer = manufacturers[0];
+        setSelectedManufacturer(defaultManufacturer || null);
+        setFilteredProducts(products || []);
+      }
     }
-  }, [categoryData]);
+  }, [categoryData, manufacturerSlug]);
 
   // Add this function to handle subcategory opening
   const handleSubcategoryOpen = async (subcategoryId) => {
