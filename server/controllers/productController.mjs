@@ -242,3 +242,56 @@ export const getProductDetails = async (req, res) => {
         });
     }
 };
+
+export const updateManufacturer = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description, subcategory, category } = req.body;
+        
+        // Find existing manufacturer
+        const manufacturer = await manufacturerModel.findById(id);
+        if (!manufacturer) {
+            return res.status(404).send({ 
+                message: "Manufacturer not found", 
+                success: false 
+            });
+        }
+
+        // Create update data
+        const updateData = {
+            name,
+            description,
+            subcategory,
+            category
+        };
+
+        // Handle image update if new file is uploaded
+        if (req.files && req.files[0]) {
+            // Delete old image
+            if (manufacturer.key) {
+                await deleteFile(manufacturer.key);
+            }
+            updateData.image = req.files[0].location;
+            updateData.key = req.files[0].key;
+        }
+
+        // Update manufacturer
+        const updatedManufacturer = await manufacturerModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+
+        res.status(200).send({
+            message: "Manufacturer updated successfully",
+            success: true,
+            manufacturer: updatedManufacturer
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ 
+            message: error.message, 
+            success: false 
+        });
+    }
+};

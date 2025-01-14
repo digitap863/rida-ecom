@@ -44,6 +44,15 @@ const Manufacture = () => {
     }
   }
 
+  const handleEdit = (manufacturer) => {
+    navigate("/add-manufacturer", { 
+      state: { 
+        isEdit: true, 
+        manufacturer 
+      } 
+    });
+  };
+
   return (
     <Layout>
       <div className="p-4">
@@ -71,7 +80,13 @@ const Manufacture = () => {
                   <span className="font-medium">{manufacturer.name}</span>
                   <span className="text-sm truncate">{manufacturer.description}</span>
                   <div className="flex justify-end" >
-                    <Button>Edit</Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(manufacturer)}
+                    >
+                      Edit
+                    </Button>
                   </div>
                   <div className="flex justify-end">
                     <Button

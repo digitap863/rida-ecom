@@ -22,7 +22,8 @@ import {
   getProductById,
   getProducts,
   updateProductDetails,
-  getProductDetails
+  getProductDetails,
+  updateManufacturer
 } from "../controllers/productController.mjs";
 import { uploadS3 } from "../middleware/s3multer.mjs";
 
@@ -70,5 +71,7 @@ router.post("/upload-image", authMiddleware, uploadS3.single('image'), async (re
 router.put("/category/:id", authMiddleware, uploadS3.any(), updateCategory);
 
 router.put("/subcategory/:id", authMiddleware, uploadS3.any(), updateSubcategory);
+
+router.put("/manufacturer/:id", authMiddleware, uploadS3.any(), updateManufacturer);
 
 export default router;
