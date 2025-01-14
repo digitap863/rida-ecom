@@ -23,7 +23,8 @@ import {
   getProducts,
   updateProductDetails,
   getProductDetails,
-  updateManufacturer
+  updateManufacturer,
+  updateProduct
 } from "../controllers/productController.mjs";
 import { uploadS3 } from "../middleware/s3multer.mjs";
 
@@ -73,5 +74,7 @@ router.put("/category/:id", authMiddleware, uploadS3.any(), updateCategory);
 router.put("/subcategory/:id", authMiddleware, uploadS3.any(), updateSubcategory);
 
 router.put("/manufacturer/:id", authMiddleware, uploadS3.any(), updateManufacturer);
+
+router.put("/product/:id", authMiddleware, uploadS3.any(), updateProduct);
 
 export default router;

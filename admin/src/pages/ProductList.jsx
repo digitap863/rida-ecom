@@ -118,6 +118,15 @@ const ProductList = () => {
     }
   }
 
+  const handleEdit = (product) => {
+    navigate("/product-add", { 
+      state: { 
+        isEdit: true, 
+        product 
+      } 
+    });
+  };
+
   return (
     <Layout>
       <div className="p-4 space-y-4">
@@ -242,7 +251,11 @@ const ProductList = () => {
                       <TableCell>{product.manufacturer?.name}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleEdit(product)}
+                          >
                             Edit
                           </Button>
                           <Button 

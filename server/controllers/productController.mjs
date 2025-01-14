@@ -295,3 +295,72 @@ export const updateManufacturer = async (req, res) => {
         });
     }
 };
+
+export const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, partNumber, manufacturer, category, subcategory, model, description } = req.body;
+        const removedImageIndexes = JSON.parse(req.body.removedImageIndexes || '[]');
+        
+        // Find existing product
+        const product = await productModel.findById(id);
+        if (!product) {
+            return res.status(404).send({ 
+                message: "Product not found", 
+                success: false 
+            });
+        }
+
+        // Create update data
+        const updateData = {
+            name,
+            partNumber,
+            manufacturer,
+            category,
+            subcategory,
+            model,
+            description
+        };
+
+        // Handle image updates
+        if (removedImageIndexes.length > 0 || (req.files && req.files.length > 0)) {
+            // Keep only non-removed existing images
+            const remainingImages = product.image.filter((_, index) => !removedImageIndexes.includes(index));
+            const remainingKeys = product.imageKey.filter((_, index) => !removedImageIndexes.includes(index));
+
+            // Delete removed images from S3
+            const deletePromises = removedImageIndexes.map(index => deleteFile(product.imageKey[index]));
+            await Promise.all(deletePromises);
+
+            // Add new images
+            if (req.files && req.files.length > 0) {
+                updateData.image = [...remainingImages, ...req.files.map(file => file.location)];
+                updateData.imageKey = [...remainingKeys, ...req.files.map(file => file.key)];
+            } else {
+                updateData.image = remainingImages;
+                updateData.imageKey = remainingKeys;
+            }
+        }
+
+        // Update product
+        const updatedProduct = await productModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        ).populate('manufacturer')
+         .populate('category')
+         .populate('subcategory');
+
+        res.status(200).send({
+            message: "Product updated successfully",
+            success: true,
+            product: updatedProduct
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ 
+            message: error.message, 
+            success: false 
+        });
+    }
+};
