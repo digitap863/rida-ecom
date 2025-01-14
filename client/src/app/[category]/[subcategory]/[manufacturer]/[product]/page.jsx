@@ -36,18 +36,16 @@ const ProductPage = ({ params }) => {
   }, [data]);
 
   const handleManufacturerSelect = (manufacturerId) => {
-    // Find the accordion (subcategory) that contains the selected manufacturer
+  
     const selectedAccordion = sidebarData?.data?.find(accordion => 
       accordion.items.some(item => item.id === manufacturerId)
     );
 
-    // Find the manufacturer within that accordion
     const selectedManufacturer = selectedAccordion?.items.find(item => 
       item.id === manufacturerId
     );
 
     if (selectedAccordion && selectedManufacturer) {
-      // Use the subcategorySlug from the selected accordion
       router.push(`/${category}/${selectedAccordion.subcategorySlug}?manufacturer=${selectedManufacturer.slug}`);
     }
   };

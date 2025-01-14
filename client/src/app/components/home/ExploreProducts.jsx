@@ -1,9 +1,12 @@
+"use client"
 import React from 'react'
 import CategoryCard from './CategoryCard'
 import Category_1 from "@/assets/home/category_1.png";
 import Category_2 from "@/assets/home/category_2.png";
 import Category_3 from "@/assets/home/category_3.png";
 import Category_4 from "@/assets/home/category_4.png";
+import { getdata } from '@/api/req';
+import { useQuery } from '@tanstack/react-query';
 
 const category = [
     {
@@ -29,6 +32,12 @@ const category = [
 ]
 
 const ExploreProducts = () => {
+    const { data, isLoading } = useQuery({
+        queryKey: ['category'],
+        queryFn: () => getdata('/category'),
+    })
+
+    console.log(data,"this is category")
     return (
         <div className='max-w-screen-2xl mx-auto p-20'>
             <div className='flex items-center gap-2'>
@@ -37,8 +46,8 @@ const ExploreProducts = () => {
             </div>
             <div className=' flex gap-10  mt-10 '>
                 {
-                    category.map((item) => (
-                        <CategoryCard key={item.id} item={item} />
+                    data?.categories?.map((item,index) => (
+                        <CategoryCard key={index} item={item} />
                     ))
                 }
             </div>

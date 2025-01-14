@@ -10,6 +10,8 @@ import {
   getBySubcategory,
   getCategory,
   getSubcategory,
+  updateCategory,
+  updateSubcategory,
 } from "../controllers/categoryController.mjs";
 import {
   addManufacturer,
@@ -27,7 +29,7 @@ import { uploadS3 } from "../middleware/s3multer.mjs";
 const router = express.Router();
 
 router.post("/login", adminLogin);
-router.post("/category", authMiddleware, addCategory);
+router.post("/category", authMiddleware, uploadS3.any(), addCategory);
 router.get("/category", authMiddleware, getCategory);
 router.delete("/category/:id", authMiddleware, deleteCategory);
 router.post("/subcategory", authMiddleware,uploadS3.any(),addSubcategory);
@@ -56,7 +58,7 @@ router.post("/upload-image", authMiddleware, uploadS3.single('image'), async (re
         }
         
         res.json({
-            location: req.file.location, // S3 URL of the uploaded image
+            location: req.file.location, 
             key: req.file.key
         });
     } catch (error) {
@@ -64,5 +66,9 @@ router.post("/upload-image", authMiddleware, uploadS3.single('image'), async (re
         res.status(500).json({ message: 'Upload failed' });
     }
 });
+
+router.put("/category/:id", authMiddleware, uploadS3.any(), updateCategory);
+
+router.put("/subcategory/:id", authMiddleware, uploadS3.any(), updateSubcategory);
 
 export default router;

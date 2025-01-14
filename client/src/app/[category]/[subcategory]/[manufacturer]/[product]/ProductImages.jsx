@@ -9,7 +9,7 @@ export const ProductImages = ({ images, selectedImage, setSelectedImage }) => {
       <Image
         src={selectedImage}
         alt="Product Image"
-        className="mx-auto object-contain aspect-square"
+        className="mx-auto object-contain aspect-square "
         width={400}
         height={400}
         priority={true}

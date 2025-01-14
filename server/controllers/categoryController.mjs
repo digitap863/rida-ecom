@@ -6,16 +6,18 @@ import { product as productModel } from "../model/product.mjs";
 
 export const addCategory = async (req, res) => {
     try {
-        const { name, category } = req.body;
+        const { name, category  } = req.body;
+        const image = req.files[0].location;
+        const imageKey = req.files[0].key;
 
-        if (name && category) {
+        if (name && category && image) {
             const isExist = await categorymodel.findOne({ name, category });
             if (isExist) {
                 return res
                     .status(400)
                     .send({ message: "Category already exists", success: false });
             }
-            const addedcategory = new categorymodel({ name, category });
+            const addedcategory = new categorymodel({ name, category, image, imageKey });
             await addedcategory.save();
             res
                 .status(201)
@@ -40,10 +42,24 @@ export const getCategory = async (req, res) => {
 export const deleteCategory = async (req, res) => {
     try {
         const { id } = req.params;
+        
+        const category = await categorymodel.findById(id);
+        if (!category) {
+            return res
+                .status(404)
+                .send({ message: "Category not found", success: false });
+        }
+
+        if (category.imageKey) {
+            await deleteFile(category.imageKey);
+        }
+
         await categorymodel.findByIdAndDelete(id);
-        res
-            .status(200)
-            .send({ message: "Category deleted successfully", success: true });
+        
+        res.status(200).send({ 
+            message: "Category deleted successfully", 
+            success: true 
+        });
     } catch (error) {
         console.log(error.message);
         res.status(500).send({ message: error.message, success: false });
@@ -56,7 +72,6 @@ export const addSubcategory = async (req, res) => {
         const image = req.files[0].location;
         const imageKey = req.files[0].key;
 
-        // Ensure the category exists
         const category = await categorymodel.findById(categoryId);
         if (!category) {
             return res
@@ -144,80 +159,12 @@ export const getBySubcategory = async (req, res) => {
     }
 };
 
-// export const getCategoryData = async (req, res) => {
-//     try {
-//         const { category } = req.params;
 
-//         // Find the category by slug
-//         const findCategory = await categorymodel.findOne({ category });
-//         if (!findCategory) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "Category not found",
-//             });
-//         }
-
-//         // Find all subcategories and populate their manufacturers
-//         const subcategories = await subcategoryModel
-//             .find({ category: findCategory._id })
-//             .lean();
-
-//         if (!subcategories || subcategories.length === 0) {
-//             return res.status(404).json({
-//                 success: false,
-//                 message: "No subcategories found for this category",
-//             });
-//         }
-
-//         // Get all manufacturers for all subcategories
-//         const allManufacturers = await manufacturerModel
-//             .find({
-//                 subcategory: { $in: subcategories.map(sub => sub._id) }
-//             })
-//             .lean();
-
-//         // Get all products for the category
-//         const products = await productModel
-//             .find({ category: findCategory._id })
-//             .populate('manufacturer')
-//             .lean();
-
-//         // Set default subcategory and manufacturer
-//         const defaultSubcategory = subcategories[0];
-//         const defaultManufacturer = allManufacturers.find(
-//             m => m.subcategory.toString() === defaultSubcategory._id.toString()
-//         );
-
-//         // Group products by manufacturer
-//         const defaultProducts = products.filter(
-//             p => p.manufacturer._id.toString() === defaultManufacturer._id.toString()
-//         );
-
-//         res.status(200).json({
-//             success: true,
-//             data: {
-//                 category: findCategory,
-//                 subcategories,
-//                 defaultSubcategory,
-//                 manufacturers: allManufacturers,
-//                 defaultManufacturer,
-//                 products: defaultProducts
-//             },
-//         });
-//     } catch (error) {
-//         console.error(error.message);
-//         res.status(500).json({
-//             success: false,
-//             message: "Internal server error",
-//         });
-//     }
-// };
 
 export const getCategoryBySlug = async (req, res) => {
     try {
         const { category, subcategory } = req.params;
 
-        // Find the category by slug
         const findCategory = await categorymodel.findOne({ category });
         if (!findCategory) {
             return res.status(404).json({
@@ -226,7 +173,6 @@ export const getCategoryBySlug = async (req, res) => {
             });
         }
 
-        // Find all subcategories for this category
         const subcategories = await subcategoryModel
             .find({ category: findCategory._id })
             .lean();
@@ -238,7 +184,6 @@ export const getCategoryBySlug = async (req, res) => {
             });
         }
 
-        // Find the current subcategory or use the first one
         const currentSubcategory = subcategory 
             ? subcategories.find(sub => sub.subcategory === subcategory)
             : subcategories[0];
@@ -250,14 +195,12 @@ export const getCategoryBySlug = async (req, res) => {
             });
         }
 
-        // Get all manufacturers for all subcategories
         const manufacturers = await manufacturerModel
             .find({
                 subcategory: currentSubcategory._id
             })
             .lean();
 
-        // Get products and default manufacturer only if manufacturers exist
         let products = [];
         let defaultManufacturer = null;
 
@@ -300,7 +243,6 @@ export const getManufacturerProducts = async (req, res) => {
     try {
         const { category, subcategory, manufacturerId } = req.params;
 
-        // First, find the category by slug
         const findCategory = await categorymodel.findOne({ category });
         if (!findCategory) {
             return res.status(404).json({
@@ -309,7 +251,6 @@ export const getManufacturerProducts = async (req, res) => {
             });
         }
 
-        // Then, find the subcategory by slug and category
         const findSubcategory = await subcategoryModel.findOne({ 
             subcategory: subcategory,
             category: findCategory._id 
@@ -321,7 +262,6 @@ export const getManufacturerProducts = async (req, res) => {
             });
         }
 
-        // Get the manufacturer
         const manufacturer = await manufacturerModel.findById(manufacturerId).lean();
         if (!manufacturer) {
             return res.status(404).json({
@@ -330,7 +270,6 @@ export const getManufacturerProducts = async (req, res) => {
             });
         }
 
-        // Now get the products with all necessary populated fields
         const products = await productModel
             .find({ 
                 manufacturer: manufacturerId,
@@ -362,7 +301,6 @@ export const getSubcategoryManufacturers = async (req, res) => {
     try {
         const { subcategoryId } = req.params;
 
-        // Get manufacturers for this subcategory
         const manufacturers = await manufacturerModel
             .find({ subcategory: subcategoryId })
             .lean();
@@ -383,11 +321,10 @@ export const getSubcategoryManufacturers = async (req, res) => {
 };
 
 export const getProductDetails = async (req, res) => {
-    console.log("getProductDetails");
+
     try {
         const { category, subcategory, manufacturer, product } = req.params;
 
-        // Find category by slug
         const findCategory = await categorymodel.findOne({ category });
         if (!findCategory) {
             return res.status(404).json({
@@ -396,7 +333,6 @@ export const getProductDetails = async (req, res) => {
             });
         }
 
-        // Find subcategory
         const findSubcategory = await subcategoryModel.findOne({ 
             subcategory,
             category: findCategory._id 
@@ -421,7 +357,6 @@ export const getProductDetails = async (req, res) => {
             });
         }
 
-        // Find product by slug
         const findProduct = await productModel.findOne({ 
             slug: product,
             manufacturer: findManufacturer._id,
@@ -436,13 +371,12 @@ export const getProductDetails = async (req, res) => {
             });
         }
 
-        // Find related products (same manufacturer and subcategory, excluding current product)
         const relatedProducts = await productModel.find({
             manufacturer: findManufacturer._id,
             subcategory: findSubcategory._id,
-            _id: { $ne: findProduct._id } // exclude current product
+            _id: { $ne: findProduct._id }
         })
-        .limit(4) // limit to 4 related products
+        .limit(4)
         .populate('manufacturer')
         .populate('category')
         .populate('subcategory')
@@ -470,7 +404,6 @@ export const getProductSidebar = async (req, res) => {
     try {
         const { category, subcategory } = req.params;
 
-        // Find the category
         const findCategory = await categorymodel.findOne({ category });
         if (!findCategory) {
             return res.status(404).json({
@@ -479,19 +412,16 @@ export const getProductSidebar = async (req, res) => {
             });
         }
 
-        // Get all subcategories for this category
         const subcategories = await subcategoryModel
             .find({ category: findCategory._id })
             .lean();
 
-        // Get all manufacturers for these subcategories
         const manufacturers = await manufacturerModel
             .find({
                 subcategory: { $in: subcategories.map(sub => sub._id) }
             })
             .lean();
 
-        // Transform data for accordion
         const accordionData = subcategories.map(subcat => ({
             id: subcat._id,
             title: subcat.name,
@@ -518,6 +448,98 @@ export const getProductSidebar = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Internal server error"
+        });
+    }
+};
+
+export const updateCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        
+        const updateData = { 
+            name,
+            category: name.toLowerCase().replace(/\s+/g, "-")
+        };
+
+        const oldCategory = await categorymodel.findById(id);
+        if (!oldCategory) {
+            return res.status(404).send({ message: "Category not found", success: false });
+        }
+
+        if (req.files && req.files[0]) {
+            if (oldCategory.imageKey) {
+                await deleteFile(oldCategory.imageKey);
+            }
+            updateData.image = req.files[0].location;
+            updateData.imageKey = req.files[0].key;
+        }
+
+        const updatedCategory = await categorymodel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+        
+
+        res.status(200).send({ 
+            message: "Category updated successfully", 
+            success: true,
+            category: updatedCategory 
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message, success: false });
+    }
+};
+
+export const updateSubcategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, categoryId } = req.body;
+        
+        // Create update data
+        const updateData = { 
+            name,
+            category: categoryId,
+            subcategory: name.toLowerCase().replace(/\s+/g, "-")
+        };
+
+        // Find existing subcategory
+        const oldSubcategory = await subcategoryModel.findById(id);
+        if (!oldSubcategory) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Subcategory not found" 
+            });
+        }
+
+        // Handle image update if new file is uploaded
+        if (req.files && req.files[0]) {
+            if (oldSubcategory.imageKey) {
+                await deleteFile(oldSubcategory.imageKey);
+            }
+            updateData.image = req.files[0].location;
+            updateData.imageKey = req.files[0].key;
+        }
+
+        // Update subcategory
+        const updatedSubcategory = await subcategoryModel.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        ).populate('category');
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Subcategory updated successfully",
+            data: updatedSubcategory
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message 
         });
     }
 };

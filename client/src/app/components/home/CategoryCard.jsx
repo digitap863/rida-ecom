@@ -2,7 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import category_1 from '@/assets/home/category_1.png'
 import Image from 'next/image'
 
-const CategoryCard = ({item}) => {
+const CategoryCard = ({ item }) => {
     return (
 
         <div
@@ -16,6 +16,8 @@ const CategoryCard = ({item}) => {
                 alt=""
                 className="w-full h-full object-cover absolute inset-0 transition-transform duration-500 group-hover:scale-110"
                 quality={100}
+                width={100}
+                height={100}
             />
             <div className="absolute bottom-5 left-5 z-20 opacity-100 group-hover:opacity-100 transition-opacity duration-300">
                 <h3 className="text-white font-medium  max-w-48">{item.name}</h3>

@@ -16,7 +16,8 @@ export const ProductContent = ({ product, relatedProducts }) => {
   const scrollToSection = (ref) => {
     ref.current?.scrollIntoView({ 
       behavior: 'smooth',
-      block: 'start'
+      block: 'start',
+
     });
   };
 

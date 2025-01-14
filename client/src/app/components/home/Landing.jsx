@@ -12,7 +12,7 @@ const Landing = () => {
           For Any Vehicles</h1>
         <p className='text-white'>Bus Airconditioning Systems For Any Busses Bus Airconditioning Systems <br />
           For Any Busses  Bus Airconditioning Systems For Any Busses </p>
-        <Button className="bg-[#FEC500] text-black text-sm px-10">SHOP NOW</Button>
+        <Button className="bg-[#FEC500] hover:bg-ind_blue hover:text-white  text-black text-sm px-10">SHOP NOW</Button>
       </div>
     </div>
   )

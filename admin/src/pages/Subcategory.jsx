@@ -1,7 +1,7 @@
 import Layout from "@/components/layout/Layout"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { deleteData, getdata } from "../api/req"
+import { deleteData, getdata, putForm } from "../api/req"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -9,16 +9,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useNavigate } from "react-router-dom"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 
 const Subcategory = () => {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   // Single query for categories
   const { data: categories = [] } = useQuery({
     queryKey: ["category"],
     queryFn: () => getdata("/category"),
   });
-  const { data: subcategories = [] } = useQuery({
+  const { data: subcategories = [], isLoading } = useQuery({
     queryKey: ["subcategory"],
     queryFn: () => getdata("/subcategory"),
   });
@@ -27,6 +30,19 @@ const Subcategory = () => {
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all")
   const [searchQuery, setSearchQuery] = useState("")
+
+  // Add update mutation
+  const updateSubcategoryMutation = useMutation({
+    mutationFn: ({ id, data }) => putForm(`/subcategory/${id}`, data),
+    onSuccess: () => {
+      toast.success("Subcategory updated successfully");
+      queryClient.invalidateQueries(["subcategory"]);
+      navigate("/subcategory");
+    },
+    onError: (error) => {
+      toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`);
+    }
+  });
 
   const handleDelete = (id) => {
     setCategoryToDelete(id);
@@ -44,11 +60,21 @@ const Subcategory = () => {
   // Filter subcategories based on selected category and search query
   const filteredSubcategories = subcategories?.data?.data?.filter((subcategory) => {
     const matchesCategory = selectedCategoryFilter === "all" || subcategory.category?._id === selectedCategoryFilter
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       subcategory.name.toLowerCase().includes(searchQuery.toLowerCase())
 
     return matchesCategory && matchesSearch
   })
+
+  // Add handler for edit button
+  const handleEdit = (subcategory) => {
+    navigate("/add-subcategory", { 
+      state: { 
+        isEdit: true, 
+        subcategory 
+      } 
+    });
+  };
 
   return (
     <Layout>
@@ -75,8 +101,8 @@ const Subcategory = () => {
                 />
               </div>
 
-              <Select 
-                value={selectedCategoryFilter} 
+              <Select
+                value={selectedCategoryFilter}
                 onValueChange={setSelectedCategoryFilter}
               >
                 <SelectTrigger>
@@ -92,8 +118,8 @@ const Subcategory = () => {
                 </SelectContent>
               </Select>
 
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => {
                   setSelectedCategoryFilter("all")
                   setSearchQuery("")
@@ -111,6 +137,7 @@ const Subcategory = () => {
                     <TableHead>Image</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Category</TableHead>
+                    <TableHead>Edit</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -135,14 +162,23 @@ const Subcategory = () => {
                           {subcategory.name}
                         </TableCell>
                         <TableCell>{subcategory.category?.name}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell>
                           <Button
-                            variant="destructive"
+                            variant="outline"
                             size="sm"
-                            onClick={() => handleDelete(subcategory._id)}
+                            onClick={() => handleEdit(subcategory)}
                           >
-                            Delete
+                            Edit
                           </Button>
+                        </TableCell>
+                        <TableCell className="text-right">
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDelete(subcategory._id)}
+                            >
+                              Delete
+                            </Button>
                         </TableCell>
                       </TableRow>
                     ))

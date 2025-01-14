@@ -61,7 +61,7 @@ const Manufacture = () => {
               {manufacturers?.data?.manufacturers?.map((manufacturer) => (
                 <div
                   key={manufacturer._id}
-                  className="grid grid-cols-4 items-center p-3 border rounded hover:bg-accent"
+                  className="grid grid-cols-5 items-center p-3 border rounded hover:bg-accent"
                 >
                   <img 
                     src={manufacturer.image} 
@@ -70,6 +70,9 @@ const Manufacture = () => {
                   />
                   <span className="font-medium">{manufacturer.name}</span>
                   <span className="text-sm truncate">{manufacturer.description}</span>
+                  <div className="flex justify-end" >
+                    <Button>Edit</Button>
+                  </div>
                   <div className="flex justify-end">
                     <Button
                       variant="destructive"
