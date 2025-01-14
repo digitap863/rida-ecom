@@ -85,7 +85,7 @@ const ProductDetailsAdding = () => {
       toast.success('Product details updated successfully');
     },
     onError: (error) => {
-      toast.error('Failed to update product details');
+      toast.error(`Error occurred: ${error.response?.data?.message || 'Something went wrong'}`);
     }
   });
 
