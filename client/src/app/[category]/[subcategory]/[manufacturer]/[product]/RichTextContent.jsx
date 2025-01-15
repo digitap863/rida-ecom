@@ -1,4 +1,6 @@
+'use client'
 import React from 'react'
+import DOMPurify from 'isomorphic-dompurify'
 
 export const RichTextContent = ({ content }) => {
   if (!content) return null;
@@ -107,7 +109,7 @@ export const RichTextContent = ({ content }) => {
         [&>div>table>thead>tr>th]:text-left
         [&>div>table>thead>tr>th]:font-semibold
       `}
-        dangerouslySetInnerHTML={{ __html: tempDiv.innerHTML }} 
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(tempDiv.innerHTML) }}
         style={{ imageRendering: 'crisp-edges' }}
       />
     </div>

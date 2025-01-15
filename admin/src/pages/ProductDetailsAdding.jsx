@@ -124,7 +124,7 @@ const ProductDetailsAdding = () => {
                 <form onSubmit={handleSpecificationsSubmit} className="space-y-4">
                   <Editor
                     apiKey="hcrrth1lpac35dpiup1dyp187brl4ulzcwgzs8tjh7qt4vab"
-                    value={specifications}
+                    value={specifications || product?.data?.product?.specifications}
                     onEditorChange={(content) => setSpecifications(content)}
                     init={editorConfig}
                   />
@@ -146,7 +146,7 @@ const ProductDetailsAdding = () => {
                 <form onSubmit={handleTechnicalDataSubmit} className="space-y-4">
                   <Editor
                     apiKey="hcrrth1lpac35dpiup1dyp187brl4ulzcwgzs8tjh7qt4vab"
-                    value={technicalData}
+                    value={ technicalData || product?.data?.product?.technicalData}
                     onEditorChange={(content) => setTechnicalData(content)}
                     init={editorConfig}
                   />
@@ -165,7 +165,7 @@ const ProductDetailsAdding = () => {
                     <label className="text-sm font-medium">YouTube Embed Link</label>
                     <Input
                       type="text"
-                      value={videoLink}
+                      value={videoLink || product?.data?.product?.videoLink}
                       onChange={(e) => setVideoLink(e.target.value)}
                       placeholder="e.g., https://www.youtube.com/embed/..."
                     />
@@ -180,7 +180,7 @@ const ProductDetailsAdding = () => {
                       <div className="aspect-video">
                         <iframe
                           className="w-full h-full"
-                          src={videoLink}
+                          src={videoLink || product?.data?.product?.videoLink}
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
