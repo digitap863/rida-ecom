@@ -118,3 +118,12 @@ export async function deleteData(route) {
         throw error;
     });
 }
+
+export const searchProducts = async (query) => {
+    try {
+        const response = await AxiosAdmin.get(`/search?query=${encodeURIComponent(query)}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

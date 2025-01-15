@@ -1,14 +1,28 @@
 import { ArrowRight } from 'lucide-react'
-import category_1 from '@/assets/home/category_1.png'
 import Image from 'next/image'
-
+import { useQuery } from '@tanstack/react-query';
+import { getdata } from '@/api/req';
+import { useRouter } from 'next/navigation';
 const CategoryCard = ({ item }) => {
+    const router = useRouter()
+    const { data: subcategoriesData } = useQuery({
+        queryKey: ["subcategories"],
+        queryFn: () => getdata("/subcategories"),
+        staleTime: 1000 * 60 * 5,
+        cacheTime: 1000 * 60 * 30,
+      });
+      const handleNavigate = (id)=>{
+        const sub = subcategoriesData?.data?.filter((sub)=>sub.category._id === id)[0]
+        router.push(`/${item.category}/${sub.subcategory}`)
+                                    
+
+      }
     return (
 
         <div
             className="w-80 aspect-[1/1.2] bg-[#348A89]/30 mxauto rounded-2xl relative overflow-hidden shadow-lg 
       group cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
-
+            onClick={()=>handleNavigate(item._id)}
         >
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10" />
             <Image

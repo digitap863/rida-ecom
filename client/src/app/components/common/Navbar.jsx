@@ -5,9 +5,10 @@ import React, { useEffect, useState } from "react";
 import logo from "@/assets/home/Rida_logo.svg";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
-import { getdata, postData } from "@/api/req";
+import { getdata, postData, searchProducts } from "@/api/req";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
+import { useDebounce } from "@/hooks/useDebounce";
 
 
 
@@ -31,6 +32,16 @@ const Navbar = () => {
   });
 
   const [activeCategory, setActiveCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearch = useDebounce(searchQuery, 300);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const { data: searchResults, isLoading } = useQuery({
+    queryKey: ["search", debouncedSearch],
+    queryFn: () => searchProducts(debouncedSearch),
+    enabled: debouncedSearch.length > 0,
+    staleTime: 1000 * 60 * 5,
+  });
 
   return (
     <div>
@@ -83,8 +94,11 @@ const Navbar = () => {
           <div className="col-span-1 relative w-64 mx-auto flex items-center justify-center">
             <Input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setShowSuggestions(true)}
               placeholder="Search products..."
-              className="w-full pl-4 pr-10 py-2 border rounded-full focus:outline-none bg-[#F8F8F8] focus:border-ind_blue "
+              className="w-full pl-4 pr-10 py-2 border rounded-full focus:outline-none bg-[#F8F8F8] focus:border-ind_blue"
             />
             <svg
               className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-800"
@@ -100,6 +114,46 @@ const Navbar = () => {
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
               />
             </svg>
+
+            {/* Search Suggestions */}
+            <AnimatePresence>
+              {showSuggestions && searchQuery && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-lg z-50 max-h-[400px] overflow-y-auto"
+                >
+                  {searchResults?.products?.length > 0 ? (
+                    searchResults.products.map((product, idx) => (
+                      <Link
+                        key={product._id}
+                        href={`/category/${product.category.name}/${product.subcategory.name}/${product.manufacturer.name}/${product.slug}`}
+                        className="flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors"
+                        onClick={() => setShowSuggestions(false)}
+                      >
+                        <img
+                          src={product.image[0]}
+                          alt={product.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                        <div className="flex flex-col">
+                          <span className="font-medium">{product.name}</span>
+                          <span className="text-sm text-gray-500">
+                            {product.partNumber} - {product.model}
+                          </span>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-500">
+                      <p>No products found</p>
+                      <p className="text-sm mt-1">Try searching with a different term</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </nav>

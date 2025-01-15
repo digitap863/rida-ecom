@@ -55,7 +55,7 @@ const ProductPage = ({ params }) => {
   }
 
   return (
-    <div className="container mx-auto px-4 lg:px-20 py-8 lg:py-20">
+    <div className="container mx-auto px-4 lg:px-20 py-8 lg:py-20 font-urbanist">
       <div className="text-sm mb-6">
         <span className="text-gray-500">{category} &gt; {subcategory} &gt; {manufacturer} &gt; {product}</span>
       </div>

@@ -1,5 +1,6 @@
 import express from "express";
 import { getCategory, getSubcategory, getCategoryBySlug, getManufacturerProducts, getSubcategoryManufacturers, getProductDetails, getProductSidebar } from "../controllers/categoryController.mjs";
+import { searchProducts } from "../controllers/productController.mjs";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.get("/category/:category/:subcategory/manufacturer/:manufacturerId", getM
 router.get("/category/:category/:subcategory/subcategory/:subcategoryId", getSubcategoryManufacturers);
 router.get("/category/:category/:subcategory/:manufacturer/:product", getProductDetails);
 router.get("/category/:category/:subcategory/:manufacturer/:product/sidebar", getProductSidebar);
+router.get("/search", searchProducts);
 
 
 

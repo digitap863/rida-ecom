@@ -364,3 +364,36 @@ export const updateProduct = async (req, res) => {
         });
     }
 };
+
+export const searchProducts = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(200).send({ products: [], success: true });
+        }
+
+        const products = await productModel.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { partNumber: { $regex: query, $options: 'i' } },
+                { model: { $regex: query, $options: 'i' } }
+            ]
+        })
+        .populate('manufacturer', 'name')
+        .populate('category', 'name')
+        .populate('subcategory', 'name')
+        .select('name partNumber model image slug')
+        .limit(8);
+
+        res.status(200).send({
+            products,
+            success: true
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({
+            message: error.message,
+            success: false
+        });
+    }
+};
