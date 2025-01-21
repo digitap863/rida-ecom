@@ -14,7 +14,7 @@ const Footer = () => {
                     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6'>
                         {/* Shopping Services */}
                         <div className='flex flex-col gap-2'>
-                            <div className='font-helvetica uppercase text-[#808D9E] text-base md:text-lg'>
+                            <div className='font-urbanist uppercase text-[#808D9E] text-base md:text-lg'>
                                 Shopping Services
                             </div>
                             <ul className='font-medium text-[#191A26] text-base md:text-lg space-y-2'>
@@ -27,7 +27,7 @@ const Footer = () => {
 
                         {/* About */}
                         <div className='flex flex-col gap-2'>
-                            <div className='font-helvetica uppercase text-[#808D9E] text-base md:text-lg'>
+                            <div className='font-urbanist uppercase text-[#808D9E] text-base md:text-lg'>
                                 About
                             </div>
                             <ul className='font-medium text-[#191A26] text-base md:text-lg space-y-2'>
@@ -40,7 +40,7 @@ const Footer = () => {
 
                         {/* Resources */}
                         <div className='flex flex-col gap-2'>
-                            <div className='font-helvetica uppercase text-[#808D9E] text-base md:text-lg'>
+                            <div className='font-urbanist uppercase text-[#808D9E] text-base md:text-lg'>
                                 Resources
                             </div>
                             <ul className='font-medium text-[#191A26] text-base md:text-lg space-y-2'>
@@ -54,7 +54,7 @@ const Footer = () => {
 
                         {/* Contact Us */}
                         <div className='flex flex-col gap-2'>
-                            <div className='font-helvetica uppercase text-[#808D9E] text-base md:text-lg'>
+                            <div className='font-urbanist uppercase text-[#808D9E] text-base md:text-lg'>
                                 Contact Us
                             </div>
                             <ul className='font-medium text-[#191A26] text-base md:text-lg space-y-2'>
@@ -75,7 +75,7 @@ const Footer = () => {
                             
                             {/* Download App Section */}
                             <div className='pt-6 md:pt-10'>
-                                <h1 className='font-helvetica font-medium text-[#191A26] text-base md:text-lg mb-2'>
+                                <h1 className='font-urbanist font-medium text-[#191A26] text-base md:text-lg mb-2'>
                                     Download App
                                 </h1>
                                 <div className='flex flex-wrap gap-2'>

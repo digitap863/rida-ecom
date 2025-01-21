@@ -24,7 +24,10 @@ const poppins = Poppins({
 const helvetica = localFont({
   src: [
     {
-
+      path: "../../public/fonts/HelveticaNeueRegular.ttf",
+      weight: "400",
+    },
+    {
       path: "../../public/fonts/HelveticaNeueMedium.ttf",
       weight: "500",
     }
@@ -34,7 +37,7 @@ const helvetica = localFont({
 
 export const metadata = {
   title: "Rida",
-  description: "Rida Ecommerce",
+  description: "Rida",
 };
 
 export default function RootLayout({ children }) {

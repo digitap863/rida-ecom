@@ -6,7 +6,7 @@ const Newsletter = () => {
     return (
         <div className='flex bg-ind_blue'>
             <div className='container mx-auto px-4 py-10 md:p-20 text-white flex flex-col lg:flex-row justify-between items-center gap-6 lg:gap-0'>
-                <p className='font-helvetica text-2xl md:text-3xl lg:text-4xl text-center lg:text-left mb-4 lg:mb-0'>
+                <p className='font-urbanist font-semibold text-2xl md:text-3xl lg:text-4xl text-center lg:text-left mb-4 lg:mb-0'>
                     Subscribe to our <i>newsletter</i>
                 </p>
                 <div className='flex flex-col sm:flex-row gap-4 w-full lg:w-auto'>

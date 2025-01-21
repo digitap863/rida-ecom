@@ -14,11 +14,11 @@ export const VideoSection = ({ videoLink }) => {
   if (!videoId) return null;
 
   return (
-    <div className='mt-5'>
-      <h2 className='text-3xl mb-3 font-urbanist font-semibold'>Video</h2>
+    <div className='mt-4 sm:mt-5'>
+      <h2 className='text-xl sm:text-3xl mb-3 font-urbanist font-semibold'>Video</h2>
       <Dialog>
         <DialogTrigger asChild>
-          <div className='relative w-full h-[300px] bg-gray-100 rounded-lg cursor-pointer group overflow-hidden'>
+          <div className='relative w-full h-[200px] sm:h-[300px] bg-gray-100 rounded-lg cursor-pointer group overflow-hidden'>
             {/* Thumbnail */}
             <div 
               className='w-full h-full bg-cover bg-center'
@@ -33,7 +33,7 @@ export const VideoSection = ({ videoLink }) => {
             </div>
           </div>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[800px] h-[600px] p-0">
+        <DialogContent className="sm:max-w-[800px] h-[300px] sm:h-[600px] p-0">
           <DialogTitle className="hidden"/>
           <iframe
             className="w-full h-full"

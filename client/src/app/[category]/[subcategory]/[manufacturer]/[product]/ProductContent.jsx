@@ -24,46 +24,36 @@ export const ProductContent = ({ product, relatedProducts }) => {
   };
 
   return (
-    <div className='w-3/4 bg-[#FAFAFA] px-8 py-5 rounded-lg'>
-      <div className='flex gap-4 justify-between sticky top-0 bg-[#FAFAFA] py-4 z-10'>
-        <Button
-          onClick={() => scrollToSection(specificationsRef)}
-          className='bg-transparent border border-ind_blue text-ind_blue min-w-[150px] hover:bg-ind_blue hover:text-white'
-        >
-          Specifications
-        </Button>
-        <Button
-          onClick={() => scrollToSection(technicalDataRef)}
-          className='bg-transparent border border-ind_blue text-ind_blue min-w-[150px] hover:bg-ind_blue hover:text-white'
-        >
-          Technical Data
-        </Button>
-        <Button
-          onClick={() => scrollToSection(videoRef)}
-          className='bg-transparent border border-ind_blue text-ind_blue min-w-[150px] hover:bg-ind_blue hover:text-white'
-        >
-          Video
-        </Button>
-        <Button
-          onClick={() => scrollToSection(relatedProductsRef)}
-          className='bg-transparent border border-ind_blue text-ind_blue min-w-[150px] hover:bg-ind_blue hover:text-white'
-        >
-          Related Products
-        </Button>
-        <Button
-          onClick={() => scrollToSection(inquiryRef)}
-          className='bg-transparent border border-ind_blue text-ind_blue min-w-[150px] hover:bg-ind_blue hover:text-white'
-        >
-          Inquiry
-        </Button>
+    <div className='w-full lg:w-3/4 bg-[#FAFAFA] px-3 sm:px-6 lg:px-8 py-5 rounded-lg'>
+      {/* Buttons container with improved wrapping */}
+      <div className='w-full'>
+        <div className='flex flex-wrap gap-2 justify-start lg:justify-between sticky top-0 bg-[#FAFAFA] py-4 z-10'>
+          {[
+            { ref: specificationsRef, label: 'Specifications' },
+            { ref: technicalDataRef, label: 'Technical Data' },
+            { ref: videoRef, label: 'Video' },
+            { ref: relatedProductsRef, label: 'Related Products' },
+            { ref: inquiryRef, label: 'Inquiry' },
+          ].map((item) => (
+            <Button
+              key={item.label}
+              onClick={() => scrollToSection(item.ref)}
+              className='bg-transparent border border-ind_blue text-ind_blue 
+                       px-3 py-1.5 text-sm whitespace-nowrap
+                       hover:bg-ind_blue hover:text-white flex-shrink-0'
+            >
+              {item.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
-      <div className='space-y-5'>
-        <div ref={specificationsRef}>
+      <div className='space-y-5 mt-4 overflow-hidden'>
+        <div ref={specificationsRef} className="w-full overflow-hidden">
           <RichTextContent content={product?.specifications} />
         </div>
 
-        <div ref={technicalDataRef}>
+        <div ref={technicalDataRef} className="w-full overflow-hidden">
           <RichTextContent content={product?.technicalData} />
         </div>
 
@@ -71,20 +61,20 @@ export const ProductContent = ({ product, relatedProducts }) => {
           <VideoSection videoLink={product?.videoLink} />
         </div>
 
-        <div ref={relatedProductsRef}>
+        <div ref={relatedProductsRef} className='overflow-hidden'>
           <RelatedProducts products={relatedProducts} />
         </div>
 
         <div ref={inquiryRef}>
-          <h2 className='text-2xl font-semibold mb-4'>Inquiry</h2>
+          <h2 className='text-xl sm:text-2xl font-semibold mb-4'>Inquiry</h2>
           <form>
-            <div className='flex flex-col gap-4 max-w-xl'>
-              <Input type='text' id='name' placeholder='Name' />
-              <Input type='text' id='contactNumber' placeholder='Contact Number' />
-              <Input type='email' id='email' placeholder='Email' />
-              <Input type='text' id='companyName' placeholder='Company Name' />
-              <Input type='text' id='country' placeholder='Country' />
-              <Textarea type='text' id='message' placeholder='Message' className='h-24' />
+            <div className='flex flex-col gap-4 w-full sm:max-w-xl'>
+              <Input type='text' id='name' placeholder='Name' className="text-sm sm:text-base" />
+              <Input type='text' id='contactNumber' placeholder='Contact Number' className="text-sm sm:text-base" />
+              <Input type='email' id='email' placeholder='Email' className="text-sm sm:text-base"/>
+              <Input type='text' id='companyName' placeholder='Company Name' className="text-sm sm:text-base"/>
+              <Input type='text' id='country' placeholder='Country' className="text-sm sm:text-base" />
+              <Textarea type='text' id='message' placeholder='Message' className='h-24 text-sm sm:text-sm' />
               <Button type='submit' className='bg-ind_blue text-white w-fit'>Send</Button>
             </div>
           </form>

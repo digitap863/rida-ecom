@@ -146,63 +146,64 @@ const Subcategory = ({ params }) => {
 
   return (
     <div className="max-w-screen-2xl mx-auto">
-      <div className="p-20">
-        <div className="font-urbanist text-[#A2a2a2] font-medium capitalize">
+      <div className="p-4 sm:p-6 md:p-10 lg:p-20">
+        <div className="font-urbanist text-[#A2a2a2] font-medium capitalize text-sm sm:text-base">
           {categoryData?.data?.category?.name || category.replace(/-/g, " ")} {" > "}{" "}
           <span className="text-[#2369AC]">
             {selectedSubcategory?.name || subcategory.replace(/-/g, " ")}
           </span>
         </div>
-        <div className="flex gap-10 mt-4">
-          <div className="w-1/4">
-            <Card className="p-4 rounded min-h-screen">
+        
+        <div className="flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-10 mt-4">
+          {/* Sidebar */}
+          <div className="w-full md:w-1/4">
+            <Card className="p-2 sm:p-4 rounded min-h-[40vh] md:min-h-screen">
               {sidebarData?.map((accordion, index) => (
                 <AccordionItem
                   key={accordion.id}
-                  title={accordion.title}
-                  items={accordion.items}
-                  isFirst={accordion.isFirst}
-                  isEmpty={accordion.isEmpty}
-                  subcategoryId={accordion.id}
+                  {...accordion}
                   onManufacturerSelect={handleManufacturerSelect}
                   onSubcategoryOpen={handleSubcategoryOpen}
                 />
               ))}
             </Card>
           </div>
-          <div className="w-3/4 flex flex-col">
-            <div className="flex gap-10 justify-between">
-              <div className="w-1/2 font-urbanist">
-                <h1 className="text-ind_blue text-4xl font-bold uppercase">
+
+          {/* Main Content */}
+          <div className="w-full md:w-3/4 flex flex-col">
+            <div className="flex  flex-col-reverse  lg:flex-row gap-4 sm:gap-6 lg:gap-10">
+              {/* Manufacturer Info */}
+              <div className="w-full lg:w-1/2 font-urbanist">
+                <h1 className="text-ind_blue text-2xl sm:text-3xl md:text-4xl font-bold uppercase">
                   {selectedManufacturer?.name || 'No Manufacturer'}
                 </h1>
-                <p className="font-medium">
-                  {selectedManufacturer?.description || 
-                    ''}
+                <p className="font-medium text-sm sm:text-base mt-2">
+                  {selectedManufacturer?.description || ''}
                 </p>
               </div>
-              <div className="w-1/2">
-              {
-                selectedManufacturer?.image && (
-                <Image 
-                src={selectedManufacturer?.image} 
-                  alt={selectedManufacturer?.name}
-                  width={400}
-                  height={300}
-                  className="object-contain"
-                />
-                )
-              }
+
+              {/* Manufacturer Image */}
+              <div className="w-full lg:w-1/2">
+                {selectedManufacturer?.image && (
+                  <Image 
+                    src={selectedManufacturer?.image} 
+                    alt={selectedManufacturer?.name}
+                    width={400}
+                    height={300}
+                    className="object-contain w-full h-auto"
+                  />
+                )}
               </div>
             </div>
-          
-            <div className="grid grid-cols-3 gap-4 mt-10">
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 sm:mt-10">
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((product, index) => (
                   <ProductCard key={index} product={product} />
                 ))
               ) : (
-                <div className="col-span-3 text-center py-10 text-gray-500">
+                <div className="col-span-full text-center py-10 text-gray-500">
                   No products available for this selection.
                 </div>
               )}

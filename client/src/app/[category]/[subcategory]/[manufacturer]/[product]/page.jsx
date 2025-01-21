@@ -70,13 +70,13 @@ const ProductPage = ({ params }) => {
       </div>
 
       <div className='mt-10'>
-        <div className="flex gap-4">
+        <div className="flex flex-col-reverse md:flex-row gap-4">
           <ProductContent 
             product={data?.data?.product}
             relatedProducts={data?.data?.relatedProducts}
           />
-          <div className='w-1/4'>
-          <Card className="p-4 rounded min-h-screen">
+          <div className='md:w-1/4'>
+          <Card className="p-4 rounded min-h-[40vh] md:min-h-screen">
             {sidebarData?.data?.map((accordion, index) => (
               <AccordionItem
                 key={accordion.id}

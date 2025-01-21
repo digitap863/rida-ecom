@@ -9,12 +9,13 @@ import { getdata, postData, searchProducts } from "@/api/req";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useRouter } from "next/navigation";
 
 
 
 
 const Navbar = () => {
-
+  const router = useRouter()
   const [isClose, setIsClose] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data } = useQuery({
@@ -38,20 +39,25 @@ const Navbar = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
 
-  const { data: searchResults, isLoading } = useQuery({
+  const { data: searchResults } = useQuery({
     queryKey: ["search", debouncedSearch],
     queryFn: () => searchProducts(debouncedSearch),
     enabled: debouncedSearch.length > 0,
     staleTime: 1000 * 60 * 5,
   });
+  console.log(subcategoriesData?.data, "thisis sub")
+  const handleNavigate = (item) => {
+    const sub = subcategoriesData?.data?.filter((sub) => sub.category._id === item._id)[0]
+    router.push(`/${item.category}/${sub.subcategory}`)
+    setIsMobileMenuOpen(false)
+  }
 
   return (
     <div className="relative">
       {/* Top Banner */}
       <div
-        className={`h-8 w-full bg-ind_blue flex items-center justify-center relative ${
-          isClose ? "hidden" : "block"
-        }`}
+        className={`h-8 w-full bg-ind_blue flex items-center justify-center relative ${isClose ? "hidden" : "block"
+          }`}
       >
         <p className="uppercase text-white font-ibmMono flex gap-2 items-center text-center text-xs md:text-sm lg:text-base">
           NATIONAL DAY Sale is LIVE! <MoveRight />
@@ -236,14 +242,14 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       <div className="md:hidden">
         <div className="flex items-center justify-between p-2">
-          <div>
+          <Link href={"/"}>
             <Image src={logo} alt="logo" priority={true} className="w-24" />
-          </div>
+          </Link>
           <div>
-            <Menu 
-              size={30} 
+            <Menu
+              size={30}
               className="cursor-pointer text-ind_blue"
-              onClick={() => setIsMobileMenuOpen(true)} 
+              onClick={() => setIsMobileMenuOpen(true)}
             />
           </div>
         </div>
@@ -257,20 +263,20 @@ const Navbar = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ 
+                transition={{
                   duration: 0.4,
                   ease: "easeInOut"
                 }}
                 className="fixed inset-0 bg-black/20 z-40 backdrop-blur-sm"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
-              
+
               {/* Menu */}
-              <motion.div 
+              <motion.div
                 initial={{ x: "100%", opacity: 0 }}
                 animate={{ x: "0%", opacity: 1 }}
                 exit={{ x: "100%", opacity: 0 }}
-                transition={{ 
+                transition={{
                   type: "spring",
                   stiffness: 200,
                   damping: 25,
@@ -280,25 +286,25 @@ const Navbar = () => {
               >
                 <div className="p-4 h-full relative">
                   {/* Close Button */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ 
+                    transition={{
                       delay: 0.3,
                       duration: 0.4,
                       ease: "easeOut"
                     }}
                     className="flex justify-end"
                   >
-                    <X 
-                      size={24} 
-                      className="text-white cursor-pointer hover:rotate-90 transition-transform duration-300" 
+                    <X
+                      size={24}
+                      className="text-white cursor-pointer hover:rotate-90 transition-transform duration-300"
                       onClick={() => setIsMobileMenuOpen(false)}
                     />
                   </motion.div>
 
                   {/* Navigation Links Container */}
-                  <motion.div 
+                  <motion.div
                     initial="closed"
                     animate="open"
                     variants={{
@@ -320,8 +326,8 @@ const Navbar = () => {
                     {/* Home Link */}
                     <motion.div
                       variants={{
-                        open: { 
-                          x: 0, 
+                        open: {
+                          x: 0,
                           opacity: 1,
                           transition: {
                             type: "spring",
@@ -329,14 +335,14 @@ const Navbar = () => {
                             damping: 20
                           }
                         },
-                        closed: { 
-                          x: 50, 
-                          opacity: 0 
+                        closed: {
+                          x: 50,
+                          opacity: 0
                         }
                       }}
                     >
-                      <Link 
-                        href="/" 
+                      <Link
+                        href="/"
                         className="text-white text-2xl font-urbanist hover:text-yellow-300 transition-colors duration-300"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
@@ -347,8 +353,8 @@ const Navbar = () => {
                     {/* Products Accordion */}
                     <motion.div
                       variants={{
-                        open: { 
-                          x: 0, 
+                        open: {
+                          x: 0,
                           opacity: 1,
                           transition: {
                             type: "spring",
@@ -356,32 +362,31 @@ const Navbar = () => {
                             damping: 20
                           }
                         },
-                        closed: { 
-                          x: 50, 
-                          opacity: 0 
+                        closed: {
+                          x: 50,
+                          opacity: 0
                         }
                       }}
                       className="text-white text-2xl font-urbanist"
                     >
-                      <div 
+                      <div
                         className="flex items-center justify-between cursor-pointer hover:text-yellow-300 transition-colors duration-300"
                         onClick={() => setIsProductsOpen(!isProductsOpen)}
                       >
                         Products
-                        <ChevronDown 
-                          size={24} 
-                          className={`transform transition-all duration-500 ease-out ${
-                            isProductsOpen ? 'rotate-180' : 'rotate-0'
-                          }`}
+                        <ChevronDown
+                          size={24}
+                          className={`transform transition-all duration-500 ease-out ${isProductsOpen ? 'rotate-180' : 'rotate-0'
+                            }`}
                         />
                       </div>
-                      
+
                       <AnimatePresence>
                         {isProductsOpen && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
-                            animate={{ 
-                              height: "auto", 
+                            animate={{
+                              height: "auto",
                               opacity: 1,
                               transition: {
                                 height: {
@@ -394,8 +399,8 @@ const Navbar = () => {
                                 }
                               }
                             }}
-                            exit={{ 
-                              height: 0, 
+                            exit={{
+                              height: 0,
                               opacity: 0,
                               transition: {
                                 height: {
@@ -410,12 +415,12 @@ const Navbar = () => {
                             className="overflow-hidden"
                           >
                             <div className="mt-4 ml-4 flex flex-col space-y-4 text-lg">
-                              {["BUS HVAC PARTS", "TRANSPORT REFRIGERATION PARTS", "TRUCK HVAC PARTS", "VEHICLE AC"].map((item, i) => (
+                              {data && data?.categories?.map((item, i) => (
                                 <motion.div
                                   key={i}
                                   initial={{ x: -20, opacity: 0 }}
-                                  animate={{ 
-                                    x: 0, 
+                                  animate={{
+                                    x: 0,
                                     opacity: 1,
                                     transition: {
                                       delay: 0.1 * i,
@@ -424,13 +429,19 @@ const Navbar = () => {
                                     }
                                   }}
                                 >
-                                  <Link 
-                                    href={`/${item.toLowerCase().replace(/ /g, '-')}`}
+
+
+
+                                  <div
+                                    // href={`/${item.toLowerCase().replace(/ /g, '-')}`}
+                                    // href={"/"}
                                     className="text-white/90 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block"
-                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    // onClick={() => setIsMobileMenuOpen(false)}
+                                    onClick={() => handleNavigate(item)}
                                   >
-                                    {item}
-                                  </Link>
+                                    {item?.name}
+                                  </div>
+
                                 </motion.div>
                               ))}
                             </div>
@@ -444,8 +455,8 @@ const Navbar = () => {
                       <motion.div
                         key={i}
                         variants={{
-                          open: { 
-                            x: 0, 
+                          open: {
+                            x: 0,
                             opacity: 1,
                             transition: {
                               type: "spring",
@@ -453,13 +464,13 @@ const Navbar = () => {
                               damping: 20
                             }
                           },
-                          closed: { 
-                            x: 50, 
-                            opacity: 0 
+                          closed: {
+                            x: 50,
+                            opacity: 0
                           }
                         }}
                       >
-                        <Link 
+                        <Link
                           href={`/${item.toLowerCase().replace(/ /g, '-')}`}
                           className="text-white text-2xl font-urbanist hover:text-yellow-300 transition-colors duration-300"
                           onClick={() => setIsMobileMenuOpen(false)}
@@ -471,10 +482,10 @@ const Navbar = () => {
                   </motion.div>
 
                   {/* Contact Information */}
-                  <motion.div 
+                  <motion.div
                     initial={{ y: 20, opacity: 0 }}
-                    animate={{ 
-                      y: 0, 
+                    animate={{
+                      y: 0,
                       opacity: 1,
                       transition: {
                         delay: 0.5,

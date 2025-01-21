@@ -4,7 +4,7 @@ import ProvideBest from "./components/home/ProvideBest";
 import Topdeal from "./components/home/Topdeal";
 import Parts from "./components/home/Parts";
 import TopSelling from "./components/home/TopSelling";
-
+import Gallery from "./components/home/Gallery";
 export default function Home() {
   return (
     <div className="">
@@ -14,6 +14,7 @@ export default function Home() {
       <Topdeal />
       <Parts/>
       <TopSelling />
+      <Gallery />
     </div>
   );
 }
