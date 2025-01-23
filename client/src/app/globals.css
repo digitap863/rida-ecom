@@ -74,11 +74,8 @@ body {
 /* Container styles */
 .rich-text-container {
   width: 100%;
-  overflow-x: auto;
-
 }
 
-/* Table styles */
 .rich-text-content table {
   width: 100%;
   border-collapse: collapse;

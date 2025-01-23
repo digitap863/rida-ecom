@@ -243,11 +243,13 @@ const Navbar = () => {
       <div className="md:hidden">
         <div className="flex items-center justify-between p-2">
           <Link href={"/"}>
-            <Image src={logo} alt="logo" priority={true} className="w-24" />
+            <Image src={logo} alt="logo" priority={true} className="w-28" />
           </Link>
           <div>
+
             <Menu
-              size={30}
+            strokeWidth={3}
+              size={36}
               className="cursor-pointer text-ind_blue"
               onClick={() => setIsMobileMenuOpen(true)}
             />
@@ -282,7 +284,7 @@ const Navbar = () => {
                   damping: 25,
                   mass: 0.8
                 }}
-                className="fixed inset-y-0 right-0 w-[70%] bg-ind_blue z-50"
+                className="fixed inset-y-0 right-0 w-[78%] bg-ind_blue z-50"
               >
                 <div className="p-4 h-full relative">
                   {/* Close Button */}
@@ -429,9 +431,6 @@ const Navbar = () => {
                                     }
                                   }}
                                 >
-
-
-
                                   <div
                                     // href={`/${item.toLowerCase().replace(/ /g, '-')}`}
                                     // href={"/"}

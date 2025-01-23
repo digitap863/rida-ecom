@@ -76,7 +76,7 @@ const ProductPage = ({ params }) => {
             relatedProducts={data?.data?.relatedProducts}
           />
           <div className='md:w-1/4'>
-          <Card className="p-4 rounded min-h-[40vh] md:min-h-screen">
+          <Card className="p-4 rounded  md:min-h-screen">
             {sidebarData?.data?.map((accordion, index) => (
               <AccordionItem
                 key={accordion.id}

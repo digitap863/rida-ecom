@@ -20,36 +20,42 @@ const Topdeal = () => {
         <h1 className='flex flex-wrap font-urbanist font-bold text-2xl md:text-4xl'>
           Top Deals on <span className='pl-2 md:pl-3 font-normal'> Products </span>
         </h1>
-        <div className='h-1 w-4 rounded-lg bg-[#FEC500]'></div>
+        <div className='hidden md:block h-1 w-4 rounded-lg bg-[#FEC500]'></div>
       </div>
       
       <div className='mt-6 md:mt-10'>
         <Swiper
           modules={[Navigation]}
-          spaceBetween={24}
+          spaceBetween={1}
           className="py-8"
           navigation={{
             prevEl: '.custom-prev-button',
             nextEl: '.custom-next-button',
           }}
+          centeredSlides={true}
+          slidesOffsetBefore={0}
           breakpoints={{
             320: {
-              slidesPerView: 1,
-              spaceBetween: 16,
+                slidesPerView: 1.2,
+                spaceBetween: 16,
+                centeredSlides: true,
             },
             640: {
-              slidesPerView: 2,
-              spaceBetween: 20,
+                slidesPerView: 2,
+                spaceBetween: 20,
+                centeredSlides: false,
             },
             768: {
-              slidesPerView: 3,
-              spaceBetween: 24,
+                slidesPerView: 3,
+                spaceBetween: 24,
+                centeredSlides: false,
             },
             1024: {
-              slidesPerView: 4,
-              spaceBetween: 24,
+                slidesPerView: 4,
+                spaceBetween: 24,
+                centeredSlides: false,
             },
-          }}
+        }}
         >
           {[1, 2, 3, 4].map((item, i) => (
             <SwiperSlide key={i}>
@@ -67,13 +73,13 @@ const Topdeal = () => {
                     className='w-full h-full object-contain transition-transform duration-300 hover:scale-105'
                   />
                 </div>
-                
+              
                 <div className='py-3 md:py-5'>
                   <div className='font-poppins'>
                     <h5 className='text-lg md:text-xl text-[#383838] font-medium'>Intelligence Runs Kool</h5>
                     <p className='text-[#2369AC] mt-1 md:mt-2 text-sm md:text-base'>Bus HVAC</p>
                   </div>
-                  <p className='font-poppins text-sm md:text-base text-[#0BC155] font-medium mt-3 md:mt-4 absolute bottom-3 md:bottom-5 left-4 md:left-5'>
+                  <p className='font-poppins text-sm md:text-base text-[#0BC155] font-medium mt-3 md:mt-4 absolute bottom-2 md:bottom-5 left-4 md:left-5'>
                     Available : 10
                   </p>
                 </div>
@@ -85,7 +91,9 @@ const Topdeal = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+        <div className="flex justify-end">
         <Navbutton prev="custom-prev-button" next="custom-next-button" />
+          </div>
       </div>
     </div>
   )

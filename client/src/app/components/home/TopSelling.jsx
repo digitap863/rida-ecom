@@ -5,6 +5,7 @@ import unit_1 from "@/assets/home/unit_1.png";
 import { Button } from "@/components/ui/button";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 // Import Swiper styles
 import "swiper/css";
@@ -14,37 +15,11 @@ import "swiper/css/pagination";
 const CustomNavButtons = () => {
     return (
         <div className="flex justify-center gap-4 mt-8">
-            <button className="custom-prev-button w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-ind_blue flex items-center justify-center group hover:bg-ind_blue transition-colors duration-300">
-                <svg 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    className="stroke-ind_blue group-hover:stroke-white transition-colors duration-300"
-                >
-                    <path 
-                        d="M15 19l-7-7 7-7" 
-                        strokeWidth="2" 
-                        fill="none" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                    />
-                </svg>
+            <button className="custom-prev-button w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-ind_blue flex items-center justify-center group hover:bg-ind_blue transition-colors duration-300 text-ind_blue hover:text-white">
+                <ArrowLeft />
             </button>
-            <button className="custom-next-button w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-ind_blue flex items-center justify-center group hover:bg-ind_blue transition-colors duration-300">
-                <svg 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    className="stroke-ind_blue group-hover:stroke-white transition-colors duration-300"
-                >
-                    <path 
-                        d="M9 5l7 7-7 7" 
-                        strokeWidth="2" 
-                        fill="none" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                    />
-                </svg>
+            <button className="custom-next-button w-10 h-10 md:w-12 md:h-12 rounded-full border-2 border-ind_blue flex items-center justify-center group hover:bg-ind_blue transition-colors duration-300 text-ind_blue hover:text-white">
+                <ArrowRight />
             </button>
         </div>
     );
@@ -58,30 +33,40 @@ const TopSelling = () => {
                     <h1 className="flex font-urbanist font-bold text-2xl md:text-4xl">
                         Top Selling<span className="pl-3 font-normal"> Products </span>
                     </h1>
-                    <div className="h-1 w-4 rounded-lg bg-[#FEC500]"></div>
+                    <div className="hidden md:block h-1 w-4 rounded-lg bg-[#FEC500]"></div>
                 </div>
-                
+
                 <div className="pt-10">
                     <Swiper
                         modules={[Navigation]}
-                        spaceBetween={24}
+                        spaceBetween={1}
                         className="py-8"
                         navigation={{
                             prevEl: '.custom-prev-button',
                             nextEl: '.custom-next-button',
                         }}
+                        centeredSlides={true}
+                        slidesOffsetBefore={0}
                         breakpoints={{
                             320: {
-                                slidesPerView: 1,
+                                slidesPerView: 1.2,
+                                spaceBetween: 16,
+                                centeredSlides: true,
                             },
                             640: {
                                 slidesPerView: 2,
+                                spaceBetween: 20,
+                                centeredSlides: false,
                             },
                             768: {
                                 slidesPerView: 3,
+                                spaceBetween: 24,
+                                centeredSlides: false,
                             },
                             1024: {
                                 slidesPerView: 4,
+                                spaceBetween: 24,
+                                centeredSlides: false,
                             },
                         }}
                     >
@@ -89,9 +74,9 @@ const TopSelling = () => {
                             <SwiperSlide key={i}>
                                 <div className="w-56 mt-4 transition-all duration-300 hover:-translate-y-2 mx-auto">
                                     <div className="w-full shadow-md hover:shadow-xl transition-shadow duration-300 drop-shadow-md p-5 bg-white rounded-lg">
-                                        <Image 
-                                            src={unit_1} 
-                                            alt="Product Image" 
+                                        <Image
+                                            src={unit_1}
+                                            alt="Product Image"
                                             className="transition-transform duration-300 hover:scale-105 w-full h-auto"
                                         />
                                     </div>
@@ -106,7 +91,9 @@ const TopSelling = () => {
                             </SwiperSlide>
                         ))}
                     </Swiper>
-                    <CustomNavButtons />
+                    <div className="flex justify-end">
+                        <CustomNavButtons />
+                    </div>
                 </div>
             </div>
         </div>
