@@ -23,8 +23,8 @@ export const RichTextContent = ({ content }) => {
       // Replace table with a flex container
       table.outerHTML = `
         <div class="flex flex-col md:flex-row md:gap-8 gap-4 my-4">
-          <div class="flex-1">${leftContent}</div>
-          <div class="flex-1">${rightContent}</div>
+          <div class="flex-1 text-sm font-urbanist">${leftContent}</div>
+          <div class="flex-1 text-sm font-urbanist">${rightContent}</div>
         </div>
       `;
     } else {
