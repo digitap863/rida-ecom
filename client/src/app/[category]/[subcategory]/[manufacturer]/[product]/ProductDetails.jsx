@@ -1,4 +1,4 @@
-import { MessageCircleMore, MessageSquareDiff } from 'lucide-react'
+import { MessageCircleMore, MessageCircleQuestion } from 'lucide-react'
 import React from 'react'
 
 export const ProductDetails = ({ product }) => {
@@ -16,7 +16,7 @@ export const ProductDetails = ({ product }) => {
 
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 font-urbanist">
         <button className="bg-ind_blue text-white px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2">
-          Send Inquiry <MessageSquareDiff className='w-4 h-4 mt-1'/>
+          Send Inquiry <MessageCircleQuestion  className='w-4 h-4 mt-1'/>
         </button>
         <button className="border border-ind_blue text-ind_blue px-4 sm:px-6 py-2 rounded-lg flex items-center justify-center gap-2">
           Chat Now <MessageCircleMore className='w-4 h-4'/>

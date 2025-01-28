@@ -170,9 +170,9 @@ const Navbar = () => {
             </div>
           </div>
         </nav>
-        <div className="hidden h-16 w-full bg-ind_blue md:flex items-center justify-around text-white">
-          <div className="relative">
-            <ul className="flex items-center gap-6">
+        <div className="hidden h-16 w-full bg-ind_blue md:flex items-center text-white">
+          <div className="relative w-full max-w-screen-2xl mx-auto px-20">
+            <ul className="flex items-center gap-6 justify-between">
               {data?.categories?.map((category, index) => (
                 <li
                   key={index}
@@ -323,7 +323,7 @@ const Navbar = () => {
                         }
                       }
                     }}
-                    className="mt-8 flex flex-col space-y-6"
+                    className="ml-10 mt-8 flex flex-col space-y-6"
                   >
                     {/* Home Link */}
                     <motion.div
@@ -492,7 +492,7 @@ const Navbar = () => {
                         ease: "easeOut"
                       }
                     }}
-                    className="absolute bottom-10 left-4 right-4"
+                    className="absolute bottom-10 left-4 right-4 ml-10"
                   >
                     <div className="text-white">
                       <p className="text-sm hover:text-yellow-300 transition-colors duration-300 cursor-pointer">

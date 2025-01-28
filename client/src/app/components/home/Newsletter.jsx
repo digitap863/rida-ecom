@@ -12,7 +12,7 @@ const Newsletter = () => {
                 <div className='flex flex-col sm:flex-row gap-4 w-full lg:w-auto'>
                     <Input 
                         type='email' 
-                        placeholder='Sign up for enthralling couch reads' 
+                        placeholder='Enter your email ' 
                         className="bg-white h-12 pl-6 w-full sm:w-96 rounded-md py-4 text-black"  
                     />
                     <Button className="bg-[#FEC500] text-[#191A26] hover:bg-ind_blue hover:text-white uppercase py-6 rounded-md font-helvetica font-medium w-full sm:w-auto">

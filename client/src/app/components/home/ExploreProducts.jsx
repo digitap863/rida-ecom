@@ -51,7 +51,7 @@ const ExploreProducts = () => {
                     slidesOffsetBefore={0}
                     breakpoints={{
                         320: {
-                            slidesPerView: 1.2,
+                            slidesPerView: 1.3,
                             spaceBetween: 16,
                             centeredSlides: true,
                         },

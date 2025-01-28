@@ -20,7 +20,7 @@ const CategoryCard = ({ item }) => {
 
     return (
         <div
-            className="w-72 sm:w-72 md:w-80 aspect-[1/1.2] bg-[#348A89]/30 mx-auto rounded-2xl relative overflow-hidden shadow-lg 
+            className="w-64 sm:w-72 max-w-sm md:w-80 aspect-[1/1.2] bg-[#348A89]/30 mx-auto rounded-2xl relative overflow-hidden shadow-lg 
             group cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
             onClick={() => handleNavigate(item._id)}
         >

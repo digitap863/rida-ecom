@@ -66,16 +66,16 @@ export const ProductContent = ({ product, relatedProducts }) => {
         </div>
 
         <div ref={inquiryRef}>
-          <h2 className='text-xl sm:text-2xl font-semibold mb-4'>Inquiry</h2>
-          <form>
-            <div className='flex flex-col gap-4 w-full sm:max-w-xl'>
-              <Input type='text' id='name' placeholder='Name' className="text-sm sm:text-base" />
+          <h2 className='text-xl sm:text-2xl font-semibold mb-4 '>Inquiry</h2>
+          <form >
+            <div className='flex flex-col gap-4  w-full sm:max-w-xl'>
+              <Input type='text' id='name' placeholder='Name' className="text-sm sm:text-base " />
               <Input type='text' id='contactNumber' placeholder='Contact Number' className="text-sm sm:text-base" />
               <Input type='email' id='email' placeholder='Email' className="text-sm sm:text-base"/>
               <Input type='text' id='companyName' placeholder='Company Name' className="text-sm sm:text-base"/>
               <Input type='text' id='country' placeholder='Country' className="text-sm sm:text-base" />
               <Textarea type='text' id='message' placeholder='Message' className='h-24 text-sm sm:text-sm' />
-              <Button type='submit' className='bg-ind_blue text-white w-fit'>Send</Button>
+              <Button type='submit' className='bg-ind_blue text-white w-full'>Send</Button>
             </div>
           </form>
         </div>
