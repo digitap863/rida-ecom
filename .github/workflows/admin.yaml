@@ -1,4 +1,4 @@
-name: Admin Panel
+name: admin
 
 on:
   push:
@@ -10,6 +10,7 @@ defaults:
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -18,23 +19,17 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '20.x'
-        cache: 'npm'
-        cache-dependency-path: './admin/package-lock.json'
     - name: Install npm dependencies
-      run: npm ci
-    - name: Build React App
-      run: |
-        echo "Starting build process..."
-        CI=false npm run build
-        echo "Build completed"
-        ls -la dist/
+      run: npm install
+    - name: Run build task
+      run: npm run build --if-present
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
-      with:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        ARGS: "-rlgoDzvc -i --delete"
-        SOURCE: "admin/dist/"
-        REMOTE_HOST: ${{ secrets.HOST }}
-        REMOTE_USER: ${{ secrets.USERNAME }}
-        TARGET: "/home/ubuntu/admin"
-        EXCLUDE: "/node_modules/, .env, .git*, package-lock.json"
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc -i --delete"
+          SOURCE: "admin/dist/"
+          REMOTE_HOST: ${{ secrets.HOST }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: "/home/ubuntu/admin"
+          EXCLUDE: "/dist/, /node_modules/"
