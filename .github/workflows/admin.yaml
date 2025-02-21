@@ -30,11 +30,11 @@ jobs:
         ls -la dist/
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
-      env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "./dist/"
-          REMOTE_HOST: ${{ secrets.HOST }}
-          REMOTE_USER: ${{ secrets.USERNAME }}
-          TARGET: "/home/ubuntu/admin"
-          EXCLUDE: "/node_modules/, .env, .git*, package-lock.json"
+      with:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        ARGS: "-rlgoDzvc -i --delete"
+        SOURCE: "admin/dist/"
+        REMOTE_HOST: ${{ secrets.HOST }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        TARGET: "/home/ubuntu/admin"
+        EXCLUDE: "/node_modules/, .env, .git*, package-lock.json"
