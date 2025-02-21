@@ -1,8 +1,7 @@
 import axios from "axios"
 
-// export const url =import.meta.env.MODE === "development"?'http://localhost:8080/api':'https://rida-ecom-1.onrender.com'
-export const url ='http://localhost:8080/api'
-// export const url = 'https://rida-ecom-1.onrender.com/api'
+export const url = process.env.NODE_ENV === "development" ? 'http://localhost:8080/api' : '/api'
+
 
 
 export const AxiosAdmin = axios.create({
