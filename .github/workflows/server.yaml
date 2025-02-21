@@ -21,18 +21,23 @@ jobs:
           cache-dependency-path: './server/package-lock.json'
       - name: Install npm dependencies
         run: npm ci
-      - name: Run build task
-        run: npm run build
+      - name: Check and Run build task
+        run: |
+          if npm run | grep -q "build"; then
+            npm run build
+          else
+            echo "No build script found, skipping build step"
+          fi
       - name: Deploy to Server
         uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "server/dist/"
+          SOURCE: "server/"
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: "/home/ubuntu/server"
-          EXCLUDE: "/dist/, /node_modules/, .env, .env.*, package-lock.json"
+          EXCLUDE: "/node_modules/, .env, .env.*, package-lock.json, .git*, .next*, dist"
       - name: Restart PM2
         uses: appleboy/ssh-action@master
         with:
@@ -41,6 +46,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/server
+            npm ci --production
             pm2 restart server
 
       
