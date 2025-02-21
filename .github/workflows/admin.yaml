@@ -27,13 +27,13 @@ jobs:
         echo "Starting build process..."
         CI=false npm run build
         echo "Build completed"
-        ls -la build/
+        ls -la dist/
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "./build/"
+          SOURCE: "./dist/"
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: "/home/ubuntu/admin"
