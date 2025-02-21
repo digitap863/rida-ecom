@@ -61,4 +61,4 @@ jobs:
         script: |
           cd /home/ubuntu/client
           npm install --production
-          pm2 restart client || pm2 start npm --name "client" -- start
+          pm2 restart next-app || pm2 start npm --name "next-app" -- start
