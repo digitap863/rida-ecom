@@ -1,4 +1,4 @@
-name: admin
+name: Admin Panel
 
 on:
   push:
@@ -10,7 +10,6 @@ defaults:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -19,17 +18,19 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: './admin/package-lock.json'
     - name: Install npm dependencies
-      run: npm install
+      run: npm ci
     - name: Run build task
-      run: npm run build --if-present
+      run: npm run build
     - name: Deploy to Server
       uses: easingthemes/ssh-deploy@main
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "admin/dist/"
+          SOURCE: "admin/build/"
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: "/home/ubuntu/admin"
-          EXCLUDE: "/dist/, /node_modules/"
+          EXCLUDE: "/build/, /node_modules/, .env"
