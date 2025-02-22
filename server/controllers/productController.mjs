@@ -36,7 +36,7 @@ export const addManufacturer = async (req, res) => {
 
 export const getManufacturer = async (req, res) => {
     try {
-        const manufacturers = await manufacturerModel.find({});
+        const manufacturers = await manufacturerModel.find({}).populate('subcategory').populate('category');
         res.status(200).send({ manufacturers, success: true });
     } catch (error) {
         console.log(error.message);

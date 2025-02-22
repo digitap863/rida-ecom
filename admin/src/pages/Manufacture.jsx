@@ -70,7 +70,7 @@ const Manufacture = () => {
               {manufacturers?.data?.manufacturers?.map((manufacturer) => (
                 <div
                   key={manufacturer._id}
-                  className="grid grid-cols-5 items-center p-3 border rounded hover:bg-accent"
+                  className="grid grid-cols-6 items-center p-3 border rounded hover:bg-accent"
                 >
                   <img 
                     src={manufacturer.image} 
@@ -78,7 +78,10 @@ const Manufacture = () => {
                     className="w-12 h-12 object-cover rounded" 
                   />
                   <span className="font-medium">{manufacturer.name}</span>
-                  <span className="text-sm truncate">{manufacturer.description}</span>
+                  <span className="font-medium">{manufacturer.subcategory.name}</span>
+                  <span className="font-medium">{manufacturer.category.name}</span>
+                  {/* <span className="text-sm truncate">{manufacturer.description}</span> */}
+                  
                   <div className="flex justify-end" >
                     <Button
                       variant="outline"
