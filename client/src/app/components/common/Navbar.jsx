@@ -196,7 +196,9 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-0 mt-2 min-w-[600px] max-w-[800px] bg-white rounded-md shadow-lg z-50"
+                        className={`absolute top-full mt-2 min-w-[600px] max-w-[800px] bg-white rounded-md shadow-lg z-50 ${
+                          index >= data.categories.length - 2 ? 'right-0' : 'left-0'
+                        }`}
                       >
                         <motion.div
                           initial={{ opacity: 0 }}
