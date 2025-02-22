@@ -5,5 +5,6 @@ export const url = process.env.NODE_ENV === "development" ? 'http://localhost:80
 
 
 export const AxiosAdmin = axios.create({
+    
     baseURL:url
 })
