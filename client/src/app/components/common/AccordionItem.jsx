@@ -64,9 +64,9 @@ const AccordionItem = ({
             }}
           >
             <ul className="ml-4 sm:ml-7 mt-2 sm:mt-3 space-y-1 sm:space-y-2">
-              {items.map((item) => (
+              {items?.map((item, index) => (
                 <motion.li
-                  key={item.id}
+                  key={item.id || `item-${index}`}
                   className="flex gap-2 sm:gap-3 items-center font-urbanist font-medium text-gray-600 
                            py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg hover:bg-gray-50 cursor-pointer
                            text-sm sm:text-base"

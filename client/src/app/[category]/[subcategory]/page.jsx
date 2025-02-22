@@ -62,30 +62,21 @@ const Subcategory = ({ params }) => {
       const { currentSubcategory, manufacturers, subcategories, products } = categoryData.data;
       
       // Transform data for accordion
-      const accordionData = subcategories.map(subcat => {
-        const subcatManufacturers = manufacturers
-          .filter(mfr => mfr.subcategory.toString() === subcat._id.toString());
-
-        return {
-          id: subcat._id,
-          title: subcat.name,
-          subcategorySlug: subcat.subcategory,
-          items: subcatManufacturers.length > 0 
-            ? subcatManufacturers.map(mfr => ({
-                id: mfr._id,
-                name: mfr.name,
-                image: mfr.image,
-                description: mfr.description
-              }))
-            : [{ 
-                id: 'no-manufacturer',
-                name: 'No Manufacturers Available',
-                description: 'No manufacturers are currently available for this subcategory.'
-              }],
-          isFirst: subcat._id === currentSubcategory._id,
-          isEmpty: subcatManufacturers.length === 0
-        };
-      });
+      const accordionData = subcategories.map(subcat => ({
+        id: subcat._id,
+        title: subcat.name,
+        subcategorySlug: subcat.subcategory,
+        items: manufacturers
+          .filter(mfr => mfr.subcategory.toString() === subcat._id.toString())
+          .map(mfr => ({
+            id: mfr._id,
+            name: mfr.name,
+            image: mfr.image,
+            description: mfr.description
+          })),
+        isFirst: subcat._id === currentSubcategory._id,
+        isEmpty: manufacturers.length === 0
+      }));
 
       setSidebarData(accordionData);
       setSelectedSubcategory(currentSubcategory);
@@ -107,21 +98,24 @@ const Subcategory = ({ params }) => {
 
   // Add this function to handle subcategory opening
   const handleSubcategoryOpen = async (subcategoryId) => {
+    if (!subcategoryId) return; // Add guard clause for undefined subcategoryId
+    
     try {
       const response = await getdata(
         `/category/${category}/${subcategory}/subcategory/${subcategoryId}`
       );
       
-      if (response.success) {
+      if (response.success && response.data) {
         const { manufacturers } = response.data;
         
-        // Update the sidebar data with new manufacturers
-        setSidebarData(prevData => 
-          prevData.map(item => {
+        setSidebarData(prevData => {
+          if (!prevData) return prevData;
+          
+          return prevData.map(item => {
             if (item.id === subcategoryId) {
               return {
                 ...item,
-                items: manufacturers.length > 0 
+                items: manufacturers && manufacturers.length > 0 
                   ? manufacturers.map(mfr => ({
                       id: mfr._id,
                       name: mfr.name,
@@ -136,11 +130,28 @@ const Subcategory = ({ params }) => {
               };
             }
             return item;
-          })
-        );
+          });
+        });
       }
     } catch (error) {
       console.error("Error fetching subcategory manufacturers:", error);
+      setSidebarData(prevData => {
+        if (!prevData) return prevData;
+        
+        return prevData.map(item => {
+          if (item.id === subcategoryId) {
+            return {
+              ...item,
+              items: [{ 
+                id: 'error',
+                name: 'Error Loading Manufacturers',
+                description: 'There was an error loading manufacturers. Please try again.'
+              }]
+            };
+          }
+          return item;
+        });
+      });
     }
   };
 
@@ -161,7 +172,10 @@ const Subcategory = ({ params }) => {
               {sidebarData?.map((accordion, index) => (
                 <AccordionItem
                   key={accordion.id}
-                  {...accordion}
+                  title={accordion.title}
+                  items={accordion.items}
+                  isFirst={accordion.isFirst}
+                  subcategoryId={accordion.id}
                   onManufacturerSelect={handleManufacturerSelect}
                   onSubcategoryOpen={handleSubcategoryOpen}
                 />

@@ -45,7 +45,6 @@ const Navbar = () => {
     enabled: debouncedSearch.length > 0,
     staleTime: 1000 * 60 * 5,
   });
-  console.log(subcategoriesData?.data, "thisis sub")
   const handleNavigate = (item) => {
     const sub = subcategoriesData?.data?.filter((sub) => sub.category._id === item._id)[0]
     router.push(`/${item.category}/${sub.subcategory}`)
