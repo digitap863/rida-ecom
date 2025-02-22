@@ -196,13 +196,13 @@ const Navbar = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute top-full left-0 mt-2 min-w-[400px] bg-white rounded-md shadow-lg z-50"
+                        className="absolute top-full left-0 mt-2 min-w-[600px] max-w-[800px] bg-white rounded-md shadow-lg z-50"
                       >
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.1 }}
-                          className="grid gap-3 p-6 text-black"
+                          className="grid grid-cols-3 gap-3 p-6 text-black max-h-[400px] overflow-y-auto"
                         >
                           {subcategoriesData?.data
                             ?.filter((sub) => sub.category._id === category._id)
@@ -221,9 +221,9 @@ const Navbar = () => {
                                     <img
                                       src={subcategory.image}
                                       alt={subcategory.name}
-                                      className="w-10 h-10 object-cover rounded"
+                                      className="w-8 h-8 object-cover rounded"
                                     />
-                                    <span>{subcategory.name}</span>
+                                    <span className="text-sm">{subcategory.name}</span>
                                   </div>
                                 </Link>
                               </motion.div>
